@@ -14,3 +14,8 @@ npm install -D @nrwl/express
 npm run nx generate @nrwl/express:application server
 ```
 
+## Création d'une lib
+
+```
+npm run nx generate library <lib-name>
+```
