@@ -7,3 +7,10 @@ cd <project folder>/..
 npm init nx-workspace <project folder>
 ```
 
+## Création du serveur
+
+```
+npm install -D @nrwl/express
+npm run nx generate @nrwl/express:application server
+```
+
