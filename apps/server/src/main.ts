@@ -4,6 +4,7 @@
  */
 
 import * as express from 'express';
+import * as mqtt from 'mqtt';
 
 const app = express();
 
@@ -16,3 +17,14 @@ const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
 });
 server.on('error', console.error);
+
+const mqttURL = process.env.mqtt || "mqtt://test.mosquitto.org"
+
+let client = mqtt.connect(mqttURL);
+client.on("connect", () => {
+  client.subscribe('#');
+});
+
+client.on("message", (topic, payload) => {
+  console.log(`${topic} ${payload}`);
+});

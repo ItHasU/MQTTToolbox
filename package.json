@@ -28,6 +28,7 @@
   "private": true,
   "dependencies": {
     "express": "4.17.1",
+    "mqtt": "^4.2.6",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
