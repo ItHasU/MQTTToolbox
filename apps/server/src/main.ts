@@ -4,27 +4,37 @@
  */
 
 import * as express from 'express';
-import * as mqtt from 'mqtt';
+import { MQTTProxy } from './app/mqttProxy';
+import { parseJSON } from './app/tools/io';
+import { Config } from "@mqtttoolbox/commons";
 
-const app = express();
+async function main() {
+  //-- Load config ------------------------------------------------------------
+  try {
+    let config: Config = await parseJSON<Config>(process.env.config || "config.json");
+    console.log(config);
 
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to server!' });
-});
+    //-- Connect to MQTT servers --------------------------------------------------
+    let proxy = new MQTTProxy();
+    for (let uid in config.mqttServers) {
+      proxy.connect(uid, config.mqttServers[uid]);
+    }
 
-const port = process.env.port || 3333;
-const server = app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}/api`);
-});
-server.on('error', console.error);
+    // //-- Start server -----------------------------------------------------------
+    // const app = express();
 
-const mqttURL = process.env.mqtt || "mqtt://test.mosquitto.org"
+    // app.get('/api', (req, res) => {
+    //   res.send({ message: 'Welcome to server!' });
+    // });
 
-let client = mqtt.connect(mqttURL);
-client.on("connect", () => {
-  client.subscribe('#');
-});
+    // const port = process.env.port || 3333;
+    // const server = app.listen(port, () => {
+    //   console.log(`Listening at http://localhost:${port}/api`);
+    // });
+    // server.on('error', console.error);
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-client.on("message", (topic, payload) => {
-  console.log(`${topic} ${payload}`);
-});
+main();

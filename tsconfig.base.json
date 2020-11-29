@@ -15,7 +15,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@mqtttoolbox/server": ["libs/server/src/index.ts"],
+      "@mqtttoolbox/commons": ["libs/commons/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
