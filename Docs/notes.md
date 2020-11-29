@@ -19,3 +19,10 @@ npm run nx generate @nrwl/express:application server
 ```
 npm run nx generate library <lib-name>
 ```
+
+## Création d'une page web
+
+```
+npm install -D @nrwl/web
+npm run nx g @nrwl/web:application <name>
+```
