@@ -8,6 +8,8 @@ import { MQTTProxy } from './app/mqttProxy';
 import { parseJSON } from './app/tools/io';
 import { Config } from "@mqtttoolbox/commons";
 
+import * as path from "path";
+
 async function main() {
   //-- Load config ------------------------------------------------------------
   try {
@@ -20,18 +22,20 @@ async function main() {
       proxy.connect(uid, config.mqttServers[uid]);
     }
 
-    // //-- Start server -----------------------------------------------------------
-    // const app = express();
+    //-- Start server -----------------------------------------------------------
+    const app = express();
 
-    // app.get('/api', (req, res) => {
-    //   res.send({ message: 'Welcome to server!' });
-    // });
+    app.get('/api', (req, res) => {
+      res.send({ message: 'Welcome to server!' });
+    });
 
-    // const port = process.env.port || 3333;
-    // const server = app.listen(port, () => {
-    //   console.log(`Listening at http://localhost:${port}/api`);
-    // });
-    // server.on('error', console.error);
+    app.use("/", express.static(path.join(__dirname, "../dashboard/")));
+
+    const port = process.env.port || 3333;
+    const server = app.listen(port, () => {
+      console.log(`Listening at http://localhost:${port}/api`);
+    });
+    server.on('error', console.error);
   } catch (err) {
     console.error(err);
   }

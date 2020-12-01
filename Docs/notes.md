@@ -26,3 +26,18 @@ npm run nx generate library <lib-name>
 npm install -D @nrwl/web
 npm run nx g @nrwl/web:application <name>
 ```
+
+### Et pour intégrer bootstrap ...
+
+```
+npm install -D bootstrap popper.js jquery
+```
+
+Ajouter les imports dans main.ts. Dans le HTML, ensuite, c'est classique.
+
+```javascript
+//import 'jquery';
+import 'popper.js';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+```
