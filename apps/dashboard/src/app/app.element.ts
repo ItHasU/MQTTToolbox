@@ -10,7 +10,7 @@ enum ATTRIBUTES {
   PATH = "path"
 }
 
-export class AppElement extends HTMLElement {
+export class MQTTWidgetElement extends HTMLElement {
   public static observedAttributes = [];
 
   private _valueElement: HTMLSpanElement;
@@ -34,7 +34,9 @@ export class AppElement extends HTMLElement {
 
     this._valueElement = this.querySelector(`*[name="value"]`);
     this._dateElement = this.querySelector(`*[name="date"]`);
+  }
 
+  public connectedCallback() {
     for (let id of [ATTRIBUTES.TITLE, ATTRIBUTES.UNIT]) {
       let e: HTMLElement = this.querySelector(`*[name="${id}"]`);
       if (e) e.innerHTML = this.getAttribute(id);
@@ -42,11 +44,6 @@ export class AppElement extends HTMLElement {
 
     const path = this.getAttribute(ATTRIBUTES.PATH) ?? "";
     this._reader = new Function("$", `return $${path}`);
-  }
-
-  public connectedCallback() {
-    // this._server = this.getAttribute(ATTRIBUTES.SERVER);
-    // this._topic = this.getAttribute(ATTRIBUTES.TOPIC);
 
     this._update();
   }
@@ -71,4 +68,4 @@ export class AppElement extends HTMLElement {
     }, 1000);
   }
 }
-customElements.define('mqtt-widget', AppElement);
+customElements.define('mqtt-widget', MQTTWidgetElement);

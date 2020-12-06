@@ -1,19 +1,20 @@
-import { AppElement } from './app.element';
+import { MQTTWidgetElement } from './app.element';
 
-describe('AppElement', () => {
-  let app: AppElement;
+describe('MQTTWidgetElement', () => {
+  let app: MQTTWidgetElement;
 
   beforeEach(() => {
-    app = new AppElement();
+    app = new MQTTWidgetElement();
+    app.setAttribute("title", "Sensor")
   });
 
   it('should create successfully', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should have a greeting', () => {
+  it('should have the expected title', () => {
     app.connectedCallback();
 
-    expect(app.querySelector('h1').innerHTML).toEqual('Welcome to dashboard!');
+    expect(app.querySelector('*[name="title"]').innerHTML).toEqual('Sensor');
   });
 });
