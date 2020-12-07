@@ -1,57 +1,80 @@
 import * as mqtt from 'mqtt';
-import { MQTTServerOptions } from '@mqtttoolbox/commons';
+import { MQTTMessage, MQTTServerOptions } from '@mqtttoolbox/commons';
 
 enum ClientStatus {
     CONNECTING,
     FAILED,
     CONNECTED
 }
-interface MessageInfo {
-    payload: Buffer;
-    timestamp: Date;
-}
-
-interface ClientInfo {
-    client: mqtt.Client;
-    status: ClientStatus;
-    storage: { [topic: string]: MessageInfo };
-}
 
 export class MQTTProxy {
-    private readonly _clients: { [uid: string]: ClientInfo } = {};
+    private static _client: mqtt.Client = null;
+    private static _status: ClientStatus = null;
+    private static _messages: { [topic: string]: MQTTMessage } = {};
 
-    public async connect(uid: string, server: MQTTServerOptions): Promise<void> {
+    public static async connect(server: MQTTServerOptions): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const infos: ClientInfo = {
-                client: mqtt.connect(server.url, server.options),
-                status: ClientStatus.CONNECTING,
-                storage: {}
-            };
-            this._clients[uid] = infos;
+            MQTTProxy._client = mqtt.connect(server.url, server.options);
+            MQTTProxy._status = ClientStatus.CONNECTING;
 
-            infos.client.on("connect", () => {
-                infos.client.subscribe(server.topics);
-                infos.status = ClientStatus.CONNECTED;
+            MQTTProxy._client.on("connect", () => {
+                MQTTProxy._client.subscribe(server.topics);
+                MQTTProxy._status = ClientStatus.CONNECTED;
                 resolve();
             });
 
             // If promise was resolved, won't have any effect, so no problem for future errors
-            infos.client.on("error", (err) => {
-                infos.status = ClientStatus.FAILED;
+            MQTTProxy._client.on("error", (err) => {
+                MQTTProxy._status = ClientStatus.FAILED;
                 reject(err);
             });
 
-            infos.client.on("message", (topic: string, payload: Buffer) => {
-                infos.storage[topic] = {
+            MQTTProxy._client.on("message", (topic: string, payload: Buffer) => {
+                const message = {
+                    topic,
                     payload,
-                    timestamp: new Date()
+
+                    timestamp: new Date().getTime(),
+                    source: "server"
                 };
-                console.log(`${new Date().toLocaleString()} ${topic} ${payload}`);
+
+                MQTTProxy._messages[topic] = message;
             });
         });
     }
 
-    public get(uid: string, topic: string): MessageInfo {
-        return this._clients[uid]?.storage[topic];
+    public static get(topic: string): MQTTMessage {
+        return MQTTProxy._messages[topic];
+    }
+
+    public static getAll(filter?: {
+        topic?: RegExp;
+        after?: number;
+    }): MQTTMessage[] {
+        let res: MQTTMessage[] = [];
+        for (let topic in MQTTProxy._messages) {
+            const msg = MQTTProxy._messages[topic];
+
+            if (filter && filter.topic && !topic.match(filter.topic)) {
+                continue;
+            }
+            if (filter && filter.after && filter.after > msg.timestamp) {
+                continue;
+            }
+
+            res.push(MQTTProxy._messages[topic]);
+        }
+        return res;
+    }
+
+    public static async publish(topic: string, payload: Buffer): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (MQTTProxy._client) {
+                MQTTProxy._client.publish(topic, payload, {}, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            }
+        });
     }
 }

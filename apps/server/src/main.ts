@@ -14,19 +14,15 @@ async function main() {
   //-- Load config ------------------------------------------------------------
   try {
     let config: Config = await parseJSON<Config>(process.env.config || "config.json");
-    console.log(config);
 
     //-- Connect to MQTT servers --------------------------------------------------
-    let proxy = new MQTTProxy();
-    for (let uid in config.mqttServers) {
-      proxy.connect(uid, config.mqttServers[uid]);
-    }
+    await MQTTProxy.connect(config.server);
 
     //-- Start server -----------------------------------------------------------
     const app = express();
 
     app.get('/api', (req, res) => {
-      res.send({ message: 'Welcome to server!' });
+      res.json(MQTTProxy.getAll({ after: new Date().getTime() - 5000 }));
     });
 
     app.use("/", express.static(path.join(__dirname, "../dashboard/")));
