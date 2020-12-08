@@ -1,31 +1,23 @@
 import * as mqtt from 'mqtt';
-import { MQTTMessage, MQTTServerOptions } from '@mqtttoolbox/commons';
-
-enum ClientStatus {
-    CONNECTING,
-    FAILED,
-    CONNECTED
-}
+import { Router } from 'express';
+import { MQTTMessage, MQTTServerOptions, MQTT_API } from '@mqtttoolbox/commons';
+import { buildRoutes } from './tools/express';
 
 export class MQTTProxy {
     private static _client: mqtt.Client = null;
-    private static _status: ClientStatus = null;
     private static _messages: { [topic: string]: MQTTMessage } = {};
 
     public static async connect(server: MQTTServerOptions): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             MQTTProxy._client = mqtt.connect(server.url, server.options);
-            MQTTProxy._status = ClientStatus.CONNECTING;
 
             MQTTProxy._client.on("connect", () => {
                 MQTTProxy._client.subscribe(server.topics);
-                MQTTProxy._status = ClientStatus.CONNECTED;
                 resolve();
             });
 
             // If promise was resolved, won't have any effect, so no problem for future errors
             MQTTProxy._client.on("error", (err) => {
-                MQTTProxy._status = ClientStatus.FAILED;
                 reject(err);
             });
 
@@ -77,4 +69,16 @@ export class MQTTProxy {
             }
         });
     }
+}
+
+export function buildMQTTRouter(): Router {
+    let api: MQTT_API = {
+        getUpdate: (args: { after: number }) => {
+            return Promise.resolve(MQTTProxy.getAll(args));
+        },
+        publish: async (args: { topic: string, payload: any }) => {
+            return MQTTProxy.publish(args.topic, args.payload);
+        }
+    };
+    return buildRoutes(<any>api);
 }

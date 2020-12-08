@@ -20,3 +20,5 @@ export interface MQTTServerOptions {
 export interface Config {
     server: MQTTServerOptions;
 }
+
+export type Service = (params: any) => Promise<any>;

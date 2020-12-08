@@ -4,9 +4,9 @@
  */
 
 import * as express from 'express';
-import { MQTTProxy } from './app/mqttProxy';
+import { buildMQTTRouter, MQTTProxy } from './app/mqttProxy';
 import { parseJSON } from './app/tools/io';
-import { Config } from "@mqtttoolbox/commons";
+import { Config, MQTT_URL } from "@mqtttoolbox/commons";
 
 import * as path from "path";
 
@@ -20,6 +20,7 @@ async function main() {
 
     //-- Start server -----------------------------------------------------------
     const app = express();
+    app.use(MQTT_URL, buildMQTTRouter());
 
     app.get('/api', (req, res) => {
       res.json(MQTTProxy.getAll({ after: new Date().getTime() - 5000 }));
