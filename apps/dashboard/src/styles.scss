@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+
+body {
+}
+
+div.main {
+    position: absolute;
+    top: 56px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+#side-panel {
+    position: absolute;
+    top: 56px;
+    bottom: 100px;
+    right: 0px;
+    width: 500px;
+
+    opacity: 0.8;
+}
