@@ -9,46 +9,32 @@
 
 <body>
   <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" href="#">MQTT</a>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <!-- <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li> -->
+      </ul>
+    </div>
+    <ul class="navbar-nav d-flex">
+      <li class="nav-item">
+        <a id="code-editor-toggle" class="nav-link" href="javascript: void(0);" tabindex="-1" aria-disabled="true">
+          <i class="bi bi-pencil-square"></i>&nbsp;Edit
+        </a>
+      </li>
+    </ul>
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </li>
-        <li class="nav-item">
-          <a id="code-editor-toggle" class="nav-link" href="javascript: void(0);" tabindex="-1"
-            aria-disabled="true">Toggle
-            edit</a>
-        </li>
-      </ul>
-    </div>
   </nav>
   <div class="main">
     <div class="container container-fluid" style="height: 100%;">
       <div class="row" style="height: 100%;">
-        <div id="dashboard" class="col">
-          <mqtt-value title="Bureau" server="home" topic="tele/dry/SENSOR" path=".ENERGY.Voltage"></mqtt-value> V
-        </div>
+        <div id="dashboard" class="col"></div>
       </div>
     </div>
   </div>

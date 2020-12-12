@@ -51,6 +51,7 @@
     "@typescript-eslint/eslint-plugin": "4.3.0",
     "@typescript-eslint/parser": "4.3.0",
     "bootstrap": "^4.5.3",
+    "bootstrap-icons": "^1.2.1",
     "codemirror": "^5.58.3",
     "cypress": "^5.5.0",
     "dotenv": "6.2.0",

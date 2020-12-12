@@ -2,6 +2,7 @@ import * as $ from 'jquery';
 import 'popper.js';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import * as CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
