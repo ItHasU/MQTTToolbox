@@ -3,12 +3,14 @@ import 'popper.js';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import * as CodeMirror from 'codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/seti.css';
+import 'codemirror/mode/htmlmixed/htmlmixed';
 import "./components/mqtt-value";
 
 import './app/app.element.ts';
 import { MQTTProxy } from './tools/mqttProxy';
-
-import * as monaco from "monaco-editor";
 
 (<any>window).MQTT = MQTTProxy;
 MQTTProxy.init();
@@ -17,38 +19,50 @@ MQTTProxy.init();
 // Here are a few examples of config options that can be passed to the editor.
 // You can also call editor.updateOptions at any time to change the options.
 $(() => {
-    var editor: monaco.editor.IStandaloneCodeEditor = null;
+    // var editor: monaco.editor.IStandaloneCodeEditor = null;
     const $dashboard = $("#dashboard");
-    console.log($("#code-editor-toggle"));
-    $("#code-editor-toggle").click(() => {
-        console.log("click");
-        const $sidePanel = $("#side-panel");
-        if ($sidePanel.is(":visible")) {
-            $sidePanel.hide().removeClass("d-flex");
-        } else {
-            $sidePanel.addClass("d-flex").show();
-            editor.layout();
+    const $sidePanel = $("#side-panel");
+
+    var editor = CodeMirror($("#code-editor")[0], {
+        value: $dashboard[0].innerHTML,
+        mode: "htmlmixed",
+        lineNumbers: true,
+        theme: "seti",
+        smartIndent: true,
+        tabSize: 2,
+        indentWithTabs: false,
+        extraKeys: {
+            "Esc": () => {
+                hideEditor();
+            },
+            "Ctrl-S": () => {
+                $dashboard[0].innerHTML = editor.getValue();
+            }
         }
     });
-    $("#code-editor-save").click(() => {
-        $dashboard[0].innerHTML = editor.getValue();
-    });
-    $("#code-editor-format").click(() => {
-        let action = editor.getAction('editor.action.formatDocument');
-        if (action) action.run();
-    })
-    window.onresize = () => {
-        editor.layout();
-    };
-    editor = monaco.editor.create(
-        $("#code-editor")[0],
-        {
-            value: $dashboard[0].innerHTML,
-            language: "html",
+    editor.setSize("100%", "100%");
+    editor.refresh();
 
-            lineNumbers: "on",
-            roundedSelection: true,
-            readOnly: false,
-            theme: "vs-dark",
+    $("#code-editor-toggle").click(() => {
+        if ($sidePanel.is(":visible")) {
+            hideEditor();
+        } else {
+            showEditor();
+        }
+    });
+
+    function showEditor() {
+        $sidePanel.addClass("d-flex").show();
+        editor.refresh();
+        editor.setValue($dashboard[0].innerHTML);
+
+        editor.focus();
+        editor.setCursor(0, undefined, {
+            scroll: true
         });
+    }
+
+    function hideEditor() {
+        $sidePanel.hide().removeClass("d-flex");
+    }
 });
