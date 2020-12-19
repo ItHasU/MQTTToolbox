@@ -30,6 +30,7 @@ export class MQTTProxy {
     }
 
     public static publish(topic: string, payload: any): Promise<void> {
+        debugger;
         return MQTTProxy._services.publish({ topic, payload, timestamp: new Date().getTime(), source: "browser" });
     }
 

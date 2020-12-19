@@ -66,6 +66,8 @@ export class MQTTProxy {
                     if (err) reject(err);
                     else resolve();
                 });
+            } else {
+                reject(`Not connected`);
             }
         });
     }
@@ -77,6 +79,7 @@ export function buildMQTTRouter(): Router {
             return Promise.resolve(MQTTProxy.getAll(args));
         },
         publish: async (args: { topic: string, payload: any }) => {
+            debugger;
             return MQTTProxy.publish(args.topic, args.payload);
         }
     };

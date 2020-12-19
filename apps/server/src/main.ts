@@ -20,13 +20,8 @@ async function main() {
 
     //-- Start server -----------------------------------------------------------
     const app = express();
-    app.use(MQTT_URL, buildMQTTRouter());
-
-    app.get('/api', (req, res) => {
-      res.json(MQTTProxy.getAll({ after: new Date().getTime() - 5000 }));
-    });
-
     app.use("/", express.static(path.join(__dirname, "../dashboard/")));
+    app.use(MQTT_URL, buildMQTTRouter());
 
     const port = process.env.port || 3333;
     const server = app.listen(port, () => {

@@ -16,7 +16,7 @@
                 "CONFIG": "${workspaceFolder}/../config.json"
             },
             "outFiles": [
-                "${workspaceFolder}/dist/*.js"
+                "${workspaceFolder}/dist/**/*.js"
             ]
         }
     ]
