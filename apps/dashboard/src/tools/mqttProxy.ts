@@ -1,15 +1,11 @@
-import { MQTT_URL, MQTT_API, MQTTMessage } from '@mqtttoolbox/commons';
+import { MQTT_URL, MQTTMessage } from '@mqtttoolbox/commons';
 
-const INTERVAL_MS: number = 1000;
+const INTERVAL_MS: number = 2000;
 type MQTTMessageCallback = (msg: MQTTMessage) => void;
 
 export class MQTTProxy {
     private static _messages: { [topic: string]: MQTTMessage } = {};
     private static _callbacks: { [topic: string]: MQTTMessageCallback[] } = {};
-    // private static _services: MQTT_API = {
-    //     getUpdate: null,
-    //     publish: null
-    // };
     private static _lastUpdate: number = null;
 
     public static init(): void {
