@@ -13,7 +13,8 @@
             ],
             "program": "${workspaceFolder}/dist/apps/server/main.js",
             "env": {
-                "CONFIG": "${workspaceFolder}/../config.json"
+                "CONFIG": "${workspaceFolder}/../config.json",
+                "DEBUG": "express:*"
             },
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

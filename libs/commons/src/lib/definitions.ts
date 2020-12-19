@@ -5,7 +5,6 @@ export interface MQTTMessage {
     payload: Buffer;
 
     timestamp: number;
-    source: string;
 }
 
 export interface MQTTServerOptions {

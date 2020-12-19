@@ -33,8 +33,8 @@ export class MQTTValueElement extends HTMLElement {
         try {
             let value = msg.payload;
             let valueStr = new TextDecoder("utf-8").decode(value);
-            let entryStr = this._reader(JSON.parse(valueStr));
-            this.innerHTML = entryStr;
+            //let entryStr = this._reader(JSON.parse(valueStr));
+            this.innerHTML = valueStr;
         } catch (e) {
             console.error(e);
             this.innerHTML = "xx";
