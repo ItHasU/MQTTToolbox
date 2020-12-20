@@ -7,6 +7,10 @@ export interface MQTTMessage {
     timestamp: number;
 }
 
+export interface HTTPOptions {
+    port: number;
+}
+
 export interface MQTTServerOptions {
     // Connexion options
     url: string;
@@ -17,7 +21,8 @@ export interface MQTTServerOptions {
 }
 
 export interface Config {
-    server: MQTTServerOptions;
+    http: HTTPOptions;
+    mqtt: MQTTServerOptions;
 }
 
 export type Service = (params: any) => Promise<any>;
