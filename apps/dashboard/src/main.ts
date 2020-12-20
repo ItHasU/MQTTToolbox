@@ -8,7 +8,9 @@ import * as CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/seti.css';
 import 'codemirror/mode/htmlmixed/htmlmixed';
+
 import "./components/mqtt-value";
+import "./components/mqtt-json";
 
 import './app/app.element.ts';
 import { MQTTProxy } from './tools/mqttProxy';

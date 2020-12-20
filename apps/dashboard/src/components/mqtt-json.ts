@@ -1,25 +1,22 @@
 import { MQTTMessage } from '@mqtttoolbox/commons';
-import { MQTTProxy } from '../tools/mqttProxy';
+import { MQTTValueElement } from './mqtt-value';
 
 enum ATTRIBUTES {
-    TOPIC = "topic"
+    PATH = "path"
 }
 
-export class MQTTValueElement extends HTMLElement {
-    public static observedAttributes = [];
-
-    protected _shadowRoot: ShadowRoot;
+export class MQTTJSONElement extends MQTTValueElement {
+    private _reader: Function;
 
     constructor() {
         super();
-        this._shadowRoot = this.attachShadow({ mode: 'closed' });
     }
 
     public connectedCallback() {
-        let topic = this.getAttribute(ATTRIBUTES.TOPIC);
-        MQTTProxy.on(topic, this._update.bind(this));
+        const path = this.getAttribute(ATTRIBUTES.PATH) ?? "";
+        this._reader = new Function("$", `return $${path}`);
 
-        this._update(MQTTProxy.get(topic));
+        super.connectedCallback();
     }
 
     protected _update(msg: MQTTMessage) {
@@ -31,7 +28,8 @@ export class MQTTValueElement extends HTMLElement {
         try {
             let value = msg.payload;
             let valueStr = new TextDecoder("utf-8").decode(value);
-            this._shadowRoot.innerHTML = valueStr;
+            let entryStr = this._reader(JSON.parse(valueStr));
+            this._shadowRoot.innerHTML = entryStr;
         } catch (e) {
             console.error(e);
             this._shadowRoot.innerHTML = "xx";
@@ -39,4 +37,4 @@ export class MQTTValueElement extends HTMLElement {
     }
 }
 
-customElements.define('mqtt-value', MQTTValueElement);
+customElements.define('mqtt-json', MQTTJSONElement);

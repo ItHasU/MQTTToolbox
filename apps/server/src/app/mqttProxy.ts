@@ -92,7 +92,7 @@ export function buildMQTTRouter(): Router {
     router.get("/all", json({ type: "*/*" }), (req, res) => {
         let after: number;
         try {
-            after = Number.parseInt(req.params['after']);
+            after = Number.parseInt(req.header('after'));
         } catch (e) {
             // Don't care
             after = undefined;
@@ -101,7 +101,7 @@ export function buildMQTTRouter(): Router {
         res.json(MQTTProxy.getAll({ after }));
     });
 
-    router.post("/", json({ type: "*/*" }), (req, res) => {
+    router.post("/get", json({ type: "*/*" }), (req, res) => {
         let topic = req.body?.topic;
         if (!topic) {
             res.sendStatus(400);
@@ -118,7 +118,7 @@ export function buildMQTTRouter(): Router {
     });
 
     // curl -s -o - -X POST -H "Topic: test" http://localhost:3333/mqtt --d @data.txt
-    router.post("/", raw({ type: "*/*" }), async (req, res) => {
+    router.post("/publish", raw({ type: "*/*" }), async (req, res) => {
         try {
             await MQTTProxy.publish(req.header("Topic"), req.body);
             res.send("OK");

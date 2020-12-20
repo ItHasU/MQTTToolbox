@@ -7,10 +7,14 @@ export class MQTTProxy {
     private static _messages: { [topic: string]: MQTTMessage } = {};
     private static _callbacks: { [topic: string]: MQTTMessageCallback[] } = {};
     private static _lastUpdate: number = null;
+    private static _encoder: TextEncoder = new TextEncoder();
 
     public static init(): void {
-        // bindServices(MQTT_URL, <any>MQTTProxy._services);
         MQTTProxy._scheduleUpdate();
+    }
+
+    public static list(): string[] {
+        return Object.keys(MQTTProxy._messages);
     }
 
     public static get(topic: string): MQTTMessage {
@@ -24,14 +28,14 @@ export class MQTTProxy {
         MQTTProxy._callbacks[topic].push(callback);
     }
 
-    public static publish(topic: string, payload: string | Buffer | any): Promise<void> {
-        let payloadBuffer: Buffer = null;
-        if (payload instanceof Buffer) {
+    public static publish(topic: string, payload: any): Promise<void> {
+        let payloadBuffer: ArrayBuffer = null;
+        if (payload instanceof ArrayBuffer) {
             payloadBuffer = payload;
         } else if (typeof payload === 'string') {
-            payloadBuffer = Buffer.from(<string>payload, 'utf-8');
+            payloadBuffer = MQTTProxy._encoder.encode(<string>payload);
         } else {
-            payloadBuffer = Buffer.from(JSON.stringify(payload), 'utf-8');
+            payloadBuffer = MQTTProxy._encoder.encode(JSON.stringify(payload));
         }
 
         return fetch(`${MQTT_URL}/publish`, {
@@ -52,12 +56,12 @@ export class MQTTProxy {
 
     private static _scheduleUpdate(): void {
         var nextUpdate = new Date().getTime();
-        let params = MQTTProxy._lastUpdate ? `?after=${MQTTProxy._lastUpdate}` : "";
-        fetch(`${MQTT_URL}/all${params}`, {
+        fetch(`${MQTT_URL}/all`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'After': `${MQTTProxy._lastUpdate}`
             }
         }).then((response) => {
             return response.text();
