@@ -31,7 +31,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: package-${{ matrix.node-version }}
-        path: dist/apps/
+        path: dist/
 
   # release:
   #   name: Auto generate release
