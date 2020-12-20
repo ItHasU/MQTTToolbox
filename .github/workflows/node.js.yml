@@ -26,6 +26,7 @@ jobs:
     - run: npm ci
     - run: npm run build:prod
     - run: npm test
+    - run: cp package.json dist/package.json
     - name: Save binaries as an artefact
       uses: actions/upload-artifact@v1
       with:
