@@ -9,7 +9,7 @@ import "./components/mqtt-json";
 
 import { MQTTProxy } from './tools/mqttProxy';
 import * as Editor from './tools/editor';
-import { getPage } from './tools/pages';
+import { getPage, savePage } from './tools/pages';
 
 (<any>window).MQTT = MQTTProxy;
 
@@ -43,7 +43,10 @@ function toggleEditor() {
 }
 
 function showEditor() {
-    Editor.initIfNeeded($("#code-editor")[0]);
+    Editor.initIfNeeded($("#code-editor")[0], {
+        onEscape: hideEditor,
+        onSave: save
+    });
 
     $sidePanel.addClass("d-flex").show();
     Editor.edit($dashboard[0].innerHTML);
@@ -52,6 +55,17 @@ function showEditor() {
 function hideEditor() {
     $sidePanel.hide().removeClass("d-flex");
 }
+
+async function save(content: string): Promise<void> {
+    try {
+        await savePage(content);
+    } catch (e) {
+        console.error(e);
+    } finally {
+        $dashboard[0].innerHTML = content;
+    }
+}
+
 
 //#endregion
 

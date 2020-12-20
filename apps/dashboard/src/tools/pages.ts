@@ -9,5 +9,13 @@ export async function getPage(): Promise<string> {
 }
 
 export async function savePage(content: string): Promise<void> {
-
+    return fetch(PAGE_URL, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "text/html"
+        },
+        body: content
+    }).then(() => {
+        // Nothing more to be done, return void
+    });
 }
