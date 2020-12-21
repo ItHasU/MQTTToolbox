@@ -29,12 +29,12 @@
   },
   "private": true,
   "dependencies": {
-    "document-register-element": "1.13.1",
     "express": "4.17.1",
     "mqtt": "^4.2.6",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
+    "document-register-element": "1.13.1",
     "@nrwl/cli": "10.4.4",
     "@nrwl/cypress": "10.4.4",
     "@nrwl/eslint-plugin-nx": "10.4.4",

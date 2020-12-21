@@ -43,7 +43,7 @@ jobs:
       - name: Fetch generated package
         uses: actions/download-artifact@v1
         with:
-          name: binaries-12.x
+          name: package-12.x
       - name: Prepare Release asset
         run: zip -r mqtt-toolbox.zip dist/
       - name: Create Release
