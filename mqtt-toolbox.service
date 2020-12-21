@@ -1,0 +1,18 @@
+[Unit]
+Description=MQTT Toolbox
+After=network.target
+
+[Service]
+ExecStart=node /opt/MQTTToolbox/app/server/main.js
+Restart=always
+User=nobody
+# Use 'nogroup' group for Ubuntu/Debian
+# use 'nobody' group for Fedora
+Group=nogroup
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+Environment=CONFIG=/opt/MQTTToolbox/config.json
+WorkingDirectory=/opt/MQTTToolbox/
+
+[Install]
+WantedBy=multi-user.target
