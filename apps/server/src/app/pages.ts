@@ -18,7 +18,6 @@ export function buildPagesRouter(): Router {
 
     router.get("/", (req, res) => {
         res.header("Content-Type", "text/html");
-        console.log(_getPagePath());
         res.sendFile(_getPagePath());
     });
 
