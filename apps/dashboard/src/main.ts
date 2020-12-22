@@ -22,6 +22,15 @@ function main() {
 
     //-- Bind events ----------------------------------------------------------
     $("#code-editor-toggle").on('click', toggleEditor);
+    $("#code-editor-save").on('click', async () => {
+        try {
+            await save(Editor.getContent());
+            hideEditor();
+        } catch (e) {
+            // Failed
+            console.error(e);
+        }
+    });
 
     //-- Load data ------------------------------------------------------------
     MQTTProxy.init();
@@ -47,12 +56,13 @@ function showEditor() {
         onEscape: hideEditor,
         onSave: save
     });
-
+    $("#code-editor-save-item").show();
     $sidePanel.addClass("d-flex").show();
     Editor.edit($dashboard[0].innerHTML);
 }
 
 function hideEditor() {
+    $("#code-editor-save-item").hide();
     $sidePanel.hide().removeClass("d-flex");
 }
 

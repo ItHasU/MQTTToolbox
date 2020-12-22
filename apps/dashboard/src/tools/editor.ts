@@ -46,5 +46,9 @@ export function edit(content: string) {
     _editor.setCursor(0, undefined, {
         scroll: true
     });
+}
 
+export function getContent(): string {
+    if (_editor) return _editor.getValue();
+    else return null;
 }
