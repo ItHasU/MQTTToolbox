@@ -1,0 +1,16 @@
+{
+    "name": "MQTT Toolbox",
+    "short_name": "Dashboard",
+    "theme_color": "#2c5aa0",
+    "background_color": "#ffffff",
+    "display": "minimal-ui",
+    "scope": "/",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "assets/icon-512.png",
+            "sizes": "72x72 96x96 128x128 256x256 512x512",
+            "type": "image/png"
+        }
+    ]
+}
