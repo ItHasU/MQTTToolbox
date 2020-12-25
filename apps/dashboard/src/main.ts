@@ -6,6 +6,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import "./components/mqtt-value";
 import "./components/mqtt-json";
+import "./components/mqtt-date";
+import "./components/mqtt-age";
 
 import { MQTTProxy } from './tools/mqttProxy';
 import * as Editor from './tools/editor';
