@@ -7,10 +7,14 @@ export class MQTTProxy {
     private static readonly _messages: { [topic: string]: MQTTMessage } = {};
 
     public static async connect(server: MQTTServerOptions): Promise<void> {
+        await MQTTProxy.disconnect();
+
         return new Promise<void>((resolve, reject) => {
+            console.log(`Connecting to ${server.url}...`);
             MQTTProxy._client = mqtt.connect(server.url, server.options);
 
             MQTTProxy._client.on("connect", () => {
+                console.log(`Connected to ${server.url}`);
                 MQTTProxy._client.subscribe(server.topics);
                 resolve();
             });
@@ -31,6 +35,18 @@ export class MQTTProxy {
                 MQTTProxy._messages[topic] = message;
             });
         });
+    }
+
+    /** Disconnect (if connected) */
+    public static async disconnect(): Promise<void> {
+        let p: Promise<void> = Promise.resolve();
+        if (MQTTProxy._client) {
+            p = new Promise((resolve, reject) => {
+                MQTTProxy._client.end(false, {}, resolve);
+            });
+        }
+        MQTTProxy._client = null;
+        return p;
     }
 
     public static list(): string[] {

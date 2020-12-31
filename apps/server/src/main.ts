@@ -18,7 +18,10 @@ async function main() {
   //-- Load config ------------------------------------------------------------
   try {
     // //-- Connect to MQTT servers --------------------------------------------------
-    // MQTTProxy.connect(config.mqtt);
+    Config.on("mqtt", (name, value) => {
+      console.log(`Configuration as changed, reconnecting to MQTT server`);
+      MQTTProxy.connect(value);
+    });
 
     //-- Start server -----------------------------------------------------------
     const app = express();
@@ -31,6 +34,9 @@ async function main() {
       console.log(`Listening at http://localhost:${port}/`);
     });
     server.on('error', console.error);
+
+    // Trigger config loading
+    Config.get(null);
   } catch (err) {
     console.error(err);
     console.error(`App initialisation has failed. Exiting.`)

@@ -8,8 +8,14 @@ const ENV_CONFIG = 'CONFIG';
 const DEFAULT_PORT: number = 3000;
 const DEFAULT_CONFIG_PATH: string = 'config.json';
 
+export type ConfigNames = "mqtt";
+
+type ConfigCallback = (name: string, value: any) => void;
+type ConfigObject = { [name: string]: any };
+
 export class Config {
-  private static _configCache: Promise<Config> = null;
+  private static _configCache: Promise<ConfigObject> = null;
+  private static _callbacks: { [name: string]: ConfigCallback[] } = {};
 
   /** Read port from environment variables. Will never fail. */
   public static getPort(): number {
@@ -23,6 +29,15 @@ export class Config {
       console.error(e);
       return DEFAULT_PORT; // Default value
     }
+  }
+
+  public static on(name: ConfigNames, callback: ConfigCallback): void {
+    let callbacks: ConfigCallback[] = Config._callbacks[name];
+    if (!callbacks) {
+      Config._callbacks[name] = callbacks = [];
+    }
+
+    callbacks.push(callback);
   }
 
   /**
@@ -74,6 +89,18 @@ export class Config {
   private static async _get(): Promise<{ [uid: string]: any }> {
     if (Config._configCache === null) {
       Config._configCache = parseJSON<Config>(Config._getConfigFilename());
+      Config._configCache.then((config) => {
+        for (let name in config) {
+          const value: any = config[name];
+
+          let callbacks = Config._callbacks[name];
+          if (!callbacks) continue;
+
+          for (let callback of callbacks) {
+            callback(name, value);
+          }
+        }
+      });
     }
     return Config._configCache;
   }
