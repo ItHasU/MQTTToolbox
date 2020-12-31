@@ -24,7 +24,7 @@ RUN cd /app/ && npm run build:prod
 ###############################################################################
 # Run: Image to run, dependant on build result                                #
 ###############################################################################
-FROM node:14 AS run
+FROM node:14-slim AS run
 
 WORKDIR /app
 
