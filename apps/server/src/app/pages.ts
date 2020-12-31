@@ -1,10 +1,10 @@
 import { Router, text } from "express";
-import { getConfigValue, setConfigValue } from './tools/config';
+import { Config } from './tools/config';
 
 const CONFIG_PAGE: string = 'dashboard';
 
 async function _savePage(content: string): Promise<void> {
-    return setConfigValue(CONFIG_PAGE, content);
+    return Config.set(CONFIG_PAGE, content);
 }
 
 export function buildPagesRouter(): Router {
@@ -12,7 +12,7 @@ export function buildPagesRouter(): Router {
 
     router.get("/", async (req, res) => {
         res.header("Content-Type", "text/html");
-        res.send(await getConfigValue(CONFIG_PAGE, ""));
+        res.send(await Config.get(CONFIG_PAGE, ""));
     });
 
     router.post("/", text({ type: "*/*" }), async (req, res) => {

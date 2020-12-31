@@ -10,7 +10,7 @@ import { buildMQTTRouter, MQTTProxy } from './app/mqttProxy';
 import { buildPagesRouter } from './app/pages';
 
 import { MQTT_URL, PAGE_URL } from "@mqtttoolbox/commons";
-import { getPort } from './app/tools/config';
+import { Config } from './app/tools/config';
 
 import * as process from 'process';
 
@@ -26,7 +26,7 @@ async function main() {
     app.use(MQTT_URL, buildMQTTRouter());
     app.use(PAGE_URL, buildPagesRouter());
 
-    const port = await getPort();
+    const port: number = Config.getPort();
     const server = app.listen(port, () => {
       console.log(`Listening at http://localhost:${port}/`);
     });
