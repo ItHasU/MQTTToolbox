@@ -1,24 +1,18 @@
 import { Router, text } from "express";
-import { saveText } from "./tools/io";
+import { getConfigValue, setConfigValue } from './tools/config';
 
-import * as path from "path";
-import { getConfigFolder } from "./tools/config";
-
-function _getPagePath(): string {
-    return path.join(getConfigFolder(), "dashboard.html");
-}
+const CONFIG_PAGE: string = 'dashboard';
 
 async function _savePage(content: string): Promise<void> {
-    let pagePath = _getPagePath();
-    return saveText(pagePath, content);
+    return setConfigValue(CONFIG_PAGE, content);
 }
 
 export function buildPagesRouter(): Router {
     let router: Router = Router();
 
-    router.get("/", (req, res) => {
+    router.get("/", async (req, res) => {
         res.header("Content-Type", "text/html");
-        res.sendFile(_getPagePath());
+        res.send(await getConfigValue(CONFIG_PAGE, ""));
     });
 
     router.post("/", text({ type: "*/*" }), async (req, res) => {

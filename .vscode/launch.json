@@ -14,6 +14,7 @@
             "program": "${workspaceFolder}/dist/apps/server/main.js",
             "env": {
                 "CONFIG": "${workspaceFolder}/../config.json",
+                "PORT": "3334",
                 "DEBUG": "express:*"
             },
             "outFiles": [
