@@ -1,0 +1,44 @@
+###############################################################################
+# Build: Run nx to compile the project                                        #
+###############################################################################
+FROM node:14 AS build
+
+WORKDIR /app
+
+# Prepare environment
+#
+# This is done first, since it will not change very often. This avoids 
+# redoing it every time we build the project.
+COPY package.json package-lock.json /app/
+RUN cd /app && npm ci
+
+# Copy nx config files, then sources (will change more often)
+COPY .editorconfig .prettier* *.json *.js /app/
+COPY tools/ /app/tools/
+COPY libs/ /app/libs/
+COPY apps/ /app/apps/
+RUN ls -la /app/node_modules/
+
+RUN cd /app/ && npm run build:prod
+
+###############################################################################
+# Run: Image to run, dependant on build result                                #
+###############################################################################
+FROM node:14 AS run
+
+WORKDIR /app
+
+# Config should very rarely change
+EXPOSE 3333
+COPY docker/ /app/
+ENV CONFIG=/app/config.json
+ENV PORT=3333
+
+# First layer for npm install, will allow to lighten updates if they did not changed
+COPY --from=build /app/package.json /app/package-lock.json /app/
+RUN cd /app/ && npm install --production
+
+# Second layer, will only be modified is resulting app is modified
+COPY --from=build /app/dist/* /app
+
+ENTRYPOINT [ "node", "/app/server/main.js" ]
