@@ -53,9 +53,7 @@ export class Config {
   }
 
   /**
-   * 
-   * @param name 
-   * @param value 
+   * Set value in config. Will save file and reload it afterwards.
    */
   public static async set(name: string, value: any): Promise<void> {
     // Make sure value is stringifiable
@@ -75,8 +73,16 @@ export class Config {
       console.error(e);
     } finally {
       // Make sure config cache is deleted
-      Config._configCache = null;
+      await this.reload();
     }
+  }
+
+  /**
+   * Reload the configuration, will also trigger callbacks for all config.
+   */
+  public static reload(): Promise<void> {
+    Config._configCache = null;
+    return Config._get().then((config) => { });
   }
 
   /** Build config path from env variable */
@@ -86,7 +92,7 @@ export class Config {
   }
 
   /** Get config from filesystem of from cache if already loaded. */
-  private static async _get(): Promise<{ [uid: string]: any }> {
+  private static async _get(): Promise<ConfigObject> {
     if (Config._configCache === null) {
       Config._configCache = parseJSON<Config>(Config._getConfigFilename());
       Config._configCache.then((config) => {

@@ -17,13 +17,13 @@ import * as process from 'process';
 async function main() {
   //-- Load config ------------------------------------------------------------
   try {
-    // //-- Connect to MQTT servers --------------------------------------------------
+    //-- Connect to MQTT servers ----------------------------------------------
     Config.on("mqtt", (name, value) => {
       console.log(`Configuration as changed, reconnecting to MQTT server`);
       MQTTProxy.connect(value);
     });
 
-    //-- Start server -----------------------------------------------------------
+    //-- Start server ---------------------------------------------------------
     const app = express();
     app.use("/", express.static(path.join(__dirname, "../dashboard/")));
     app.use(MQTT_URL, buildMQTTRouter());
@@ -35,8 +35,8 @@ async function main() {
     });
     server.on('error', console.error);
 
-    // Trigger config loading
-    Config.get(null);
+    //-- Config loading -------------------------------------------------------
+    Config.reload();
   } catch (err) {
     console.error(err);
     console.error(`App initialisation has failed. Exiting.`)
