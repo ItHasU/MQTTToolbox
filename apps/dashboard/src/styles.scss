@@ -10,20 +10,11 @@ div.main {
     left: 0px;
     right: 0px;
     padding-top: 15px;
-    overflow: auto;
-}
-
-#side-panel {
-    position: absolute;
-    top: 56px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-
-    opacity: 0.75;
 }
 
 .page {
     height: 100%;
-    display: none;
+    overflow: auto;
+
+    display: none; // Hidden by default
 }
