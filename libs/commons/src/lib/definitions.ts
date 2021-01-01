@@ -20,9 +20,10 @@ export interface MQTTServerOptions {
     topics: string | string[];
 }
 
-export interface Config {
+export interface ConfigFile {
     http: HTTPOptions;
     mqtt: MQTTServerOptions;
+    dashboard: string;
 }
 
 export type Service = (params: any) => Promise<any>;

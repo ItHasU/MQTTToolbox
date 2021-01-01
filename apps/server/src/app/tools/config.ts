@@ -1,4 +1,6 @@
 import { parseJSON, saveText } from './io';
+import { ConfigFile } from "@mqtttoolbox/commons";
+
 import * as path from 'path';
 import * as process from 'process';
 
@@ -8,14 +10,12 @@ const ENV_CONFIG = 'CONFIG';
 const DEFAULT_PORT: number = 3000;
 const DEFAULT_CONFIG_PATH: string = 'config.json';
 
-export type ConfigNames = "mqtt";
-
-type ConfigCallback = (name: string, value: any) => void;
+type ConfigCallback<K extends keyof ConfigFile> = (name: K, value: ConfigFile[K]) => void;
 type ConfigObject = { [name: string]: any };
 
 export class Config {
   private static _configCache: Promise<ConfigObject> = null;
-  private static _callbacks: { [name: string]: ConfigCallback[] } = {};
+  private static _callbacks: { [name: string]: ConfigCallback<keyof ConfigFile>[] } = {};
 
   /** Read port from environment variables. Will never fail. */
   public static getPort(): number {
@@ -31,8 +31,8 @@ export class Config {
     }
   }
 
-  public static on(name: ConfigNames, callback: ConfigCallback): void {
-    let callbacks: ConfigCallback[] = Config._callbacks[name];
+  public static on<K extends keyof ConfigFile>(name: K, callback: ConfigCallback<K>): void {
+    let callbacks: ConfigCallback<keyof ConfigFile>[] = Config._callbacks[name];
     if (!callbacks) {
       Config._callbacks[name] = callbacks = [];
     }
@@ -43,7 +43,7 @@ export class Config {
   /**
    * Get config value. File is automatically loaded if needed and kept in cache.
    */
-  public static async get<T = any>(name: string, defaultValue?: T): Promise<T> {
+  public static async get<K extends keyof ConfigFile>(name: K, defaultValue?: ConfigFile[K]): Promise<ConfigFile[K]> {
     const config = await Config._get();
     if (!config || !config[name]) {
       return defaultValue;
@@ -55,7 +55,7 @@ export class Config {
   /**
    * Set value in config. Will save file and reload it afterwards.
    */
-  public static async set(name: string, value: any): Promise<void> {
+  public static async set<K extends keyof ConfigFile>(name: K, value: ConfigFile[K]): Promise<void> {
     // Make sure value is stringifiable
     try {
       JSON.stringify(value);
@@ -103,7 +103,7 @@ export class Config {
           if (!callbacks) continue;
 
           for (let callback of callbacks) {
-            callback(name, value);
+            callback(<keyof ConfigFile>name, value);
           }
         }
       });
