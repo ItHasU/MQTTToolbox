@@ -18,10 +18,10 @@ export class Navigation {
 
   public static install() {
     //-- Bind all links to pages --
-    $("*[data-page]").each((index: number, element: HTMLElement) => {
+    $("a[data-page]").each((index: number, element: HTMLElement) => {
       const $container = $(element);
       const pageName = $container.data("page");
-      const $link = $container.find("a").on('click', () => {
+      const $link = $container.on('click', () => {
         Navigation.show(pageName);
       })
     });
@@ -30,7 +30,7 @@ export class Navigation {
   public static async show(pageName: string): Promise<void> {
     //-- Hide all pages --
     $('.page').hide();
-    $("*[data-page]").removeClass("active");
+    $("*[data-page]").parents(".nav-item").removeClass("active");
     for (let pageNameTmp in Navigation._pageInfos) {
       const infosTmp = Navigation._pageInfos[pageNameTmp];
       if (infosTmp.displayed && infosTmp.onHide) {
@@ -41,7 +41,7 @@ export class Navigation {
 
     //-- Show page --
     const $page = $(`#${pageName}.page`).show();
-    $(`*[data-page="${pageName}"]`).addClass("active");
+    $(`*[data-page="${pageName}"]`).parents(".nav-item").addClass("active");
 
     const infos = Navigation._getPageInfos(pageName);
     if (!infos.initialized && infos.onInit) {
