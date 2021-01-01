@@ -12,6 +12,7 @@ import "./components/mqtt-age";
 import { MQTTProxy } from './tools/mqttProxy';
 import * as Editor from './tools/editor';
 import { getPage, savePage } from './tools/pages';
+import { Navigation } from './tools/navigation';
 
 (<any>window).MQTT = MQTTProxy;
 
@@ -19,6 +20,9 @@ let $dashboard: JQuery = null;
 let $sidePanel: JQuery = null;
 
 function main() {
+    Navigation.install();
+    Navigation.loadPage('dashboard');
+
     $dashboard = $("#dashboard");
     $sidePanel = $("#side-panel");
 
