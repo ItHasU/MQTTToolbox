@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 
 import { Navigation } from '../tools/navigation';
-import { getPage } from '../tools/pages';
+import { ConfigProxy } from '../tools/configProxy';
 
 export function register() {
     Navigation.register('dashboard', {
@@ -11,7 +11,7 @@ export function register() {
 
 async function _onShow(): Promise<void> {
     let $content = $("#dashboard");
-    return getPage().then((content) => {
+    return ConfigProxy.getValue('dashboard').then((content) => {
         $content.html(content);
     }).catch((e) => {
         $content.html(`<span class="text-danger">Failed to load dashboard</span>`);

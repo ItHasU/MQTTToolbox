@@ -17,11 +17,10 @@ export interface MQTTServerOptions {
     options?: mqtt.IClientOptions;
 
     // Subscribe options
-    topics: string | string[];
+    topics: string[];
 }
 
 export interface ConfigFile {
-    http: HTTPOptions;
     mqtt: MQTTServerOptions;
     dashboard: string;
 }

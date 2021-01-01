@@ -2,7 +2,8 @@ import * as $ from 'jquery';
 import * as Editor from '../tools/editor';
 
 import { Navigation } from '../tools/navigation';
-import { getPage, savePage } from '../tools/pages';
+import { ConfigProxy } from '../tools/configProxy';
+import { ConfigFile } from '@mqtttoolbox/commons';
 
 export function register() {
   Navigation.register('settings', {
@@ -14,66 +15,63 @@ export function register() {
 async function _onInit(pageName: string, $page: JQuery): Promise<void> {
   //-- Init editor ------------------------------------------------------------
   Editor.initIfNeeded($page.find("#code-editor")[0], {
-    onSave: _save
+    onSave: _saveDashboard
   });
-  // $("#code-editor-save-item").show();
-  // $sidePanel.addClass("d-flex").show();
-  // Editor.edit($dashboardContent[0].innerHTML);
-
+  $page.find("#code-editor-save").on('click', _saveDashboard);
+  $page.find("#mqtt-save").on('click', async () => _saveMQTT($page));
 }
 
-async function _onShow(): Promise<void> {
+async function _onShow(pageName: string, $page: JQuery): Promise<void> {
+  //-- Refresh MQTT settings --------------------------------------------------
+  let mqtt = await ConfigProxy.getValue('mqtt');
+  $page.find(`#mqtt-url`).val(mqtt.url);
+  $page.find(`#mqtt-client`).val(mqtt?.options?.clientId || "");
+  $page.find(`#mqtt-password`).val(mqtt?.options?.password || "");
+  $page.find(`#mqtt-topics`).val(mqtt?.topics.join(",") || "");
+
   //-- Refresh editor content -------------------------------------------------
-  let content = await getPage();
+  let content = await ConfigProxy.getValue('dashboard');
   Editor.edit(content);
 }
 
-function _save(): void {
-  // try {
-  //   await save(Editor.getContent());
-  // } catch (e) {
-  //   // Failed
-  //   console.error(e);
-  // }
+async function _saveDashboard(): Promise<void> {
+  try {
+    await ConfigProxy.setValues({
+      dashboard: Editor.getContent()
+    });
+  } catch (e) {
+    // Failed
+    console.error(e);
+  }
 }
 
-// $("#code-editor-save").on('click', async () => {
-// });
+async function _saveMQTT($page: JQuery): Promise<void> {
+  try {
+    let clientId: string = <string>$page.find(`#mqtt-client`).val().toString();
+    if (!clientId) clientId = undefined;
 
-//#region Editor callbacks ----------------------------------------------------
+    let password: string = <string>$page.find(`#mqtt-password`).val().toString();
+    if (!password) password = undefined;
 
-// function toggleEditor() {
-//     if ($sidePanel.is(":visible")) {
-//         hideEditor();
-//     } else {
-//         showEditor();
-//     }
-// }
+    let topicsStr: string = <string>$page.find(`#mqtt-topics`).val().toString();
+    if (!topicsStr) {
+      topicsStr = "#";
+    }
+    let topics = topicsStr.split(",").map(x => x.trim());
 
-// function showEditor() {
-//     Editor.initIfNeeded($("#code-editor")[0], {
-//         onEscape: hideEditor,
-//         onSave: save
-//     });
-//     $("#code-editor-save-item").show();
-//     $sidePanel.addClass("d-flex").show();
-//     Editor.edit($dashboardContent[0].innerHTML);
-// }
+    let mqtt: ConfigFile['mqtt'] = {
+      url: $page.find(`#mqtt-url`).val().toString(),
+      options: {
+        clientId,
+        password
+      },
+      topics
+    };
 
-// function hideEditor() {
-//     $("#code-editor-save-item").hide();
-//     $sidePanel.hide().removeClass("d-flex");
-// }
-
-// async function save(content: string): Promise<void> {
-//     try {
-//         await savePage(content);
-//     } catch (e) {
-//         console.error(e);
-//     } finally {
-//         $dashboardContent[0].innerHTML = content;
-//     }
-// }
-
-
-//#endregion
+    await ConfigProxy.setValues({
+      mqtt: mqtt
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}

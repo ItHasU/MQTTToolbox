@@ -56,18 +56,39 @@ export class Config {
    * Set value in config. Will save file and reload it afterwards.
    */
   public static async set<K extends keyof ConfigFile>(name: K, value: ConfigFile[K]): Promise<void> {
-    // Make sure value is stringifiable
     try {
-      JSON.stringify(value);
+      const config = await Config._get();
+      config[name] = JSON.parse(JSON.stringify(value)); // Make sure value is stringifiable
+
+      await Config.save();
     } catch (e) {
       console.error(e);
       throw new Error(`Failed to stringify config value for ${name}`);
     }
+  }
 
-    const config = await Config._get();
-    config[name] = value;
-
+  public static async setMulti(values: Partial<ConfigFile>): Promise<void> {
     try {
+      const config = await Config._get();
+      for (let name in values) {
+        try {
+          config[name] = JSON.parse(JSON.stringify(values[name])); // Make sure value is stringifiable
+        } catch (e) {
+          console.error(e);
+          throw new Error(`Failed to stringify config value for ${name}`);
+        }
+      }
+
+      await Config.save();
+    } catch (e) {
+      console.error(e);
+      throw new Error(`Failed to save config`);
+    }
+  }
+
+  private static async save(): Promise<void> {
+    try {
+      let config = await Config._get();
       await saveText(Config._getConfigFilename(), JSON.stringify(config, null, 2));
     } catch (e) {
       console.error(e);

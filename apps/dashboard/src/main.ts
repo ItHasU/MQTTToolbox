@@ -17,6 +17,7 @@ import * as PageSettings from './pages/settings';
 (<any>window).MQTT = MQTTProxy;
 
 function main() {
+    //-- Install navigation, pages --
     Navigation.install();
     PageDashboard.register();
     PageSettings.register();
@@ -24,7 +25,8 @@ function main() {
     //-- Load data --
     MQTTProxy.init();
 
-    Navigation.show('settings');
+    //-- Start page --
+    Navigation.show('dashboard');
 }
 
 $(main);

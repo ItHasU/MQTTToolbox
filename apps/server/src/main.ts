@@ -1,15 +1,10 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import * as express from 'express';
 import * as path from "path";
 
 import { buildMQTTRouter, MQTTProxy } from './app/mqttProxy';
-import { buildPagesRouter } from './app/pages';
+import { buildConfigRouter } from './app/configProxy';
 
-import { MQTT_URL, PAGE_URL } from "@mqtttoolbox/commons";
+import { MQTT_URL, CONFIG_URL } from "@mqtttoolbox/commons";
 import { Config } from './app/tools/config';
 
 import * as process from 'process';
@@ -19,7 +14,7 @@ async function main() {
   try {
     //-- Connect to MQTT servers ----------------------------------------------
     Config.on("mqtt", (name, value) => {
-      console.log(`Configuration as changed, reconnecting to MQTT server`);
+      console.log(`MQTT configuration has changed`);
       MQTTProxy.connect(value);
     });
 
@@ -27,7 +22,7 @@ async function main() {
     const app = express();
     app.use("/", express.static(path.join(__dirname, "../dashboard/")));
     app.use(MQTT_URL, buildMQTTRouter());
-    app.use(PAGE_URL, buildPagesRouter());
+    app.use(CONFIG_URL, buildConfigRouter());
 
     const port: number = Config.getPort();
     const server = app.listen(port, () => {

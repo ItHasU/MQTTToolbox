@@ -49,12 +49,12 @@
 
   <div class="main">
     <!-- Dashboard page -->
-    <div id="dashboard" class="container container-fluid page">
+    <div id="dashboard" class="container-fluid page">
       <!-- Content of this page is loaded dynamically -->
     </div>
 
     <!-- Settings page -->
-    <div id="settings" class="container container-fluid page">
+    <div id="settings" class="container-fluid page">
 
       <div class="card mb-3">
         <div class="card-header bg-dark text-light border border-dark">
@@ -67,7 +67,7 @@
           <div class="form-group row">
             <label for="mqtt-url" class="col-sm-2 col-form-label">URL</label>
             <div class="col-sm-10">
-              <input type="url" class="form-control" id="mqtt-url">
+              <input type="url" class="form-control" id="mqtt-url" placeholder="mqtt://&lt;host&gt;:&lt;port&gt;">
             </div>
           </div>
           <div class="form-group row">
@@ -83,9 +83,9 @@
             </div>
           </div>
           <div class="form-group row">
-            <label for="mqtt-password" class="col-sm-2 col-form-label">Topics</label>
+            <label for="mqtt-topics" class="col-sm-2 col-form-label">Topics</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="mqtt-password" placeholder="#">
+              <input type="text" class="form-control" id="mqtt-topics" placeholder="#">
               <small class="form-text text-muted">
                 Use a comma separated list. Leave empty for all topics.
               </small>
@@ -93,7 +93,9 @@
           </div>
         </div>
         <div class="card-footer bg-dark text-light">
-          <a class="btn btn-success form-control"><i class="bi bi-cloud-arrow-down-fill"></i> Save</a>
+          <a id="mqtt-save" class="btn btn-primary form-control">
+            <i class="bi bi-cloud-arrow-down-fill"></i> Save
+          </a>
         </div>
       </div>
 
@@ -109,7 +111,9 @@
           </div>
         </div>
         <div class="card-footer bg-dark text-light">
-          <a class="btn btn-success form-control"><i class="bi bi-cloud-arrow-down-fill"></i> Save</a>
+          <a id="code-editor-save" class="btn btn-primary form-control">
+            <i class="bi bi-cloud-arrow-down-fill"></i> Save
+          </a>
         </div>
       </div>
 
