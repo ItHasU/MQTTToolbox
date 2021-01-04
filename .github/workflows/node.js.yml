@@ -23,6 +23,11 @@ jobs:
     - run: npm run build:prod
     - run: npm test
     - run: cp package.json mqtt-toolbox.service dist/
+    - name: Docker meta
+      id: docker_meta
+      uses: crazy-max/ghaction-docker-meta@v1
+      with:
+        images: ithasu/mqtt-toolbox
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
@@ -40,6 +45,7 @@ jobs:
         file: ./Dockerfile
         platforms: linux/amd64,linux/arm/v7,linux/arm64
         push: true
-        tags: ithasu/mqtt-toolbox:latest
+        tags: ${{ steps.docker_meta.outputs.tags }}
+        labels: ${{ steps.docker_meta.outputs.labels }}
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
