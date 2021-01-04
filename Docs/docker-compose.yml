@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   web:
-    image: ithasu/mqtt-toolbox:dev
+    image: ithasu/mqtt-toolbox:latest
     ports:
       - "3333:3333"
     volumes:
