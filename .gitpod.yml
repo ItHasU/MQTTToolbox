@@ -1,7 +1,13 @@
-tasks:
-  - init: npm ci && npm run build
-    command: npm run start
+# The Docker image to run your workspace in. Defaults to gitpod/workspace-full
+image: node:14
 
+# Command to start on workspace startup
+# Note that this will only start incremental build. You need to run the server manually
+tasks:
+  - init: npm ci && echo '{}' > config.json
+    command: npm run watch
+
+# Ports to expose on workspace startup
 ports:
   - port: 3334
     onOpen: open-browser
