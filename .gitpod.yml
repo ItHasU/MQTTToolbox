@@ -1,0 +1,7 @@
+tasks:
+  - init: npm ci && npm run build
+    command: npm run start
+
+ports:
+  - port: 3334
+    onOpen: open-browser
