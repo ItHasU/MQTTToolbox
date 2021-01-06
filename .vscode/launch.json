@@ -7,15 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Start server",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/apps/server/main.js",
             "env": {
-                "CONFIG": "${workspaceFolder}/../config.json",
-                "PORT": "3334",
-                "DEBUG": "express:*"
+                "CONFIG": "${workspaceFolder}/config.json",
+                "PORT": "3334"
             },
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

@@ -10,4 +10,4 @@ tasks:
 # Ports to expose on workspace startup
 ports:
   - port: 3334
-    onOpen: open-browser
+    onOpen: open-preview
