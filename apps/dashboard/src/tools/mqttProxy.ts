@@ -1,4 +1,4 @@
-import { MQTT_URL, MQTTMessage } from '@mqtttoolbox/commons';
+import { MQTT_URL, MQTTMessage, MQTTPublishOptions } from '@mqtttoolbox/commons';
 
 const INTERVAL_MS: number = 2000;
 type MQTTMessageCallback = (msg: MQTTMessage) => void;
@@ -28,7 +28,7 @@ export class MQTTProxy {
         MQTTProxy._callbacks[topic].push(callback);
     }
 
-    public static publish(topic: string, payload: any): Promise<void> {
+    public static publish(topic: string, payload: any, options: MQTTPublishOptions): Promise<void> {
         let payloadBuffer: ArrayBuffer = null;
         if (payload instanceof ArrayBuffer) {
             payloadBuffer = payload;
@@ -42,6 +42,7 @@ export class MQTTProxy {
             method: 'POST',
             headers: <any>{
                 'Topic': topic,
+                'Options': options ? JSON.stringify(options) : undefined,
                 'Content-Type': 'application/octet-stream'
             },
             body: payloadBuffer

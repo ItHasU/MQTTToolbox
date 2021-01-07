@@ -1,6 +1,15 @@
 import * as mqtt from 'mqtt';
 import { Router, raw, json } from 'express';
-import { MQTTMessage, MQTTServerOptions } from '@mqtttoolbox/commons';
+import { MQTTMessage, MQTTServerOptions, MQTTPublishOptions } from '@mqtttoolbox/commons';
+
+function tryParseJSON(text: string): any {
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        // We don't care
+        return undefined;
+    }
+}
 
 export class MQTTProxy {
     private static _client: mqtt.Client = null;
@@ -77,23 +86,26 @@ export class MQTTProxy {
         return res;
     }
 
-    public static async publish(topic: string, payload: Buffer): Promise<void> {
+    public static async publish(topic: string, payload: Buffer, options: MQTTPublishOptions): Promise<void> {
         return new Promise((resolve, reject) => {
-            if (MQTTProxy._client) {
-                MQTTProxy._client.publish(topic, payload, (err) => {
-                    if (err) reject(err);
-                    else {
-                        MQTTProxy._messages[topic] = {
-                            topic,
-                            payload,
-                            timestamp: new Date().getTime()
-                        };
-                        resolve();
-                    }
-                });
-            } else {
-                reject(`Not connected`);
-            }
+            setTimeout(() => {
+                if (MQTTProxy._client) {
+                    MQTTProxy._client.publish(topic, payload, (err) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            MQTTProxy._messages[topic] = {
+                                topic,
+                                payload,
+                                timestamp: new Date().getTime()
+                            };
+                            resolve();
+                        }
+                    });
+                } else {
+                    reject(`Not connected`);
+                }
+            }, options?.timeout ?? 0);
         });
     }
 }
@@ -136,7 +148,7 @@ export function buildMQTTRouter(): Router {
     // curl -s -o - -X POST -H "Topic: test" http://localhost:3333/mqtt --d @data.txt
     router.post("/publish", raw({ type: "*/*" }), async (req, res) => {
         try {
-            await MQTTProxy.publish(req.header("Topic"), req.body);
+            await MQTTProxy.publish(req.header("Topic"), req.body, tryParseJSON(req.header("Options")));
             res.send("OK");
         } catch (e) {
             res.status(500).send(e);
