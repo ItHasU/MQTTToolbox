@@ -21,8 +21,15 @@ export interface MQTTServerOptions {
 }
 
 export interface MQTTPublishOptions {
-    // Timeout after which message will be published
+    /** Timeout after which message will be published. */
     timeout?: number;
+    /** 
+     * Date at which message must be published. 
+     * 
+     * Timestamp has the priority over timeout.
+     * If timestamp is before the current timestamp on the server, it is sent with no delay.
+     * */
+    timestamp?: number;
 }
 
 export interface ConfigFile {
