@@ -36,21 +36,22 @@ export class MQTTProxy {
 
         return new Promise<void>((resolve, reject) => {
             console.log(`Connecting to ${server.url}...`);
-            MQTTProxy._client = mqtt.connect(server.url, server.options);
+            const client = mqtt.connect(server.url, server.options);
 
-            MQTTProxy._client.on("connect", () => {
+            client.on("connect", () => {
                 console.log(`Connected to ${server.url}`);
-                MQTTProxy._client.subscribe(server.topics);
+                client.subscribe(server.topics);
+                MQTTProxy._client = client;
                 resolve();
                 MQTTProxy._scheduleNextPublish();
             });
 
             // If promise was resolved, won't have any effect, so no problem for future errors
-            MQTTProxy._client.on("error", (err) => {
+            client.on("error", (err) => {
                 reject(err);
             });
 
-            MQTTProxy._client.on("message", (topic: string, payload: Buffer) => {
+            client.on("message", (topic: string, payload: Buffer) => {
                 const message = {
                     topic,
                     payload,
@@ -105,6 +106,10 @@ export class MQTTProxy {
             res.push(MQTTProxy._messages[topic]);
         }
         return res;
+    }
+
+    public static getScheduledMessages(): ScheduledMQTTMessage[] {
+        return MQTTProxy._pendingMessages;
     }
 
     //#endregion

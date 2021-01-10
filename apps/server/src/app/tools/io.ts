@@ -1,8 +1,23 @@
 import * as fs from 'fs';
 
+function parseJSONWithBuffer(text: string) {
+    return JSON.parse(text, (k, v) => {
+        if (
+            v !== null &&
+            typeof v === 'object' &&
+            'type' in v &&
+            v.type === 'Buffer' &&
+            'data' in v &&
+            Array.isArray(v.data)) {
+            return Buffer.from(v.data);
+        }
+        return v;
+    });
+}
+
 export async function parseJSON<T>(path: string): Promise<T> {
     return parseText(path).then((text) => {
-        return <T>JSON.parse(text);
+        return <T>parseJSONWithBuffer(text);
     });
 }
 

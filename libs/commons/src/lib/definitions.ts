@@ -35,6 +35,7 @@ export interface MQTTPublishOptions {
 export interface ConfigFile {
     mqtt: MQTTServerOptions;
     dashboard: string;
+    scheduledMessages: MQTTMessage[];
 }
 
 export type Service = (params: any) => Promise<any>;
