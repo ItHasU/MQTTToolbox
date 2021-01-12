@@ -21,6 +21,21 @@ export class MQTTProxy {
         return MQTTProxy._messages[topic];
     }
 
+    /** List scheduled messages */
+    public static getScheduled(): Promise<MQTTMessage[]> {
+        return fetch(`${MQTT_URL}/scheduled`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.text();
+        }).then((text: string) => {
+            return _jsonParse(text);
+        });
+    }
+
     public static on(topic: string, callback: MQTTMessageCallback): void {
         if (!MQTTProxy._callbacks[topic]) {
             MQTTProxy._callbacks[topic] = [];

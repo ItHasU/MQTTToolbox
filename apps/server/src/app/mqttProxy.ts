@@ -233,6 +233,10 @@ export function buildMQTTRouter(): Router {
         res.json(MQTTProxy.getAll({ after }));
     });
 
+    router.get("/scheduled", (req, res) => {
+        res.json(MQTTProxy.getScheduledMessages());
+    });
+
     router.post("/get", json({ type: "*/*" }), (req, res) => {
         let topic = req.body?.topic;
         if (!topic) {
