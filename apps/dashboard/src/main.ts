@@ -14,6 +14,7 @@ import { Navigation } from './tools/navigation';
 import * as PageDashboard from './pages/dashboard';
 import * as PageSettings from './pages/settings';
 import * as PageStatus from './pages/status';
+import * as CronPage from './pages/cron';
 
 (<any>window).MQTT = MQTTProxy;
 
@@ -23,6 +24,7 @@ function main() {
     PageDashboard.register();
     PageSettings.register();
     PageStatus.register();
+    CronPage.register();
 
     //-- Load data --
     MQTTProxy.init();
