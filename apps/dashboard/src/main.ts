@@ -13,7 +13,6 @@ import { MQTTProxy } from './tools/mqttProxy';
 import { Navigation } from './tools/navigation';
 import * as PageDashboard from './pages/dashboard';
 import * as PageSettings from './pages/settings';
-import * as PageSchedule from './pages/schedule';
 import * as PageStatus from './pages/status';
 
 (<any>window).MQTT = MQTTProxy;
@@ -23,7 +22,6 @@ function main() {
     Navigation.install();
     PageDashboard.register();
     PageSettings.register();
-    PageSchedule.register();
     PageStatus.register();
 
     //-- Load data --
