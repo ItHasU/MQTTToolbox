@@ -21,6 +21,10 @@ export class MQTTProxy {
         return MQTTProxy._messages[topic];
     }
 
+    public static getAll(): MQTTMessage[] {
+        return Object.values(MQTTProxy._messages);
+    }
+
     /** List scheduled messages */
     public static getScheduled(): Promise<ScheduledMessage[]> {
         return fetch(`${MQTT_URL}/scheduled`, {
