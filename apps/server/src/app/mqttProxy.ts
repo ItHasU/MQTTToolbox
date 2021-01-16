@@ -1,6 +1,6 @@
 import * as mqtt from 'mqtt';
 import { Router, raw, json } from 'express';
-import { MQTTMessage, MQTTServerOptions, MQTTPublishOptions } from '@mqtttoolbox/commons';
+import { MQTTMessage, MQTTServerOptions, MQTTPublishOptions, ScheduledMessage } from '@mqtttoolbox/commons';
 
 function tryParseJSON(text: string): any {
     try {
@@ -11,7 +11,7 @@ function tryParseJSON(text: string): any {
     }
 }
 
-interface ScheduledMQTTMessage extends MQTTMessage {
+interface ScheduledMQTTMessage extends ScheduledMessage {
     resolve?: () => void;
     reject?: (e: any) => void;
 }
@@ -23,6 +23,7 @@ export class MQTTProxy {
     private static readonly _messages: { [topic: string]: MQTTMessage } = {};
     //-- Scheduled messages --
     private static _pendingMessages: ScheduledMQTTMessage[] = [];
+    private static _pendingMessagesNextId: number = 0;
     private static _timeoutHandle: NodeJS.Timer = null;
 
     //#region Connection ------------------------------------------------------
@@ -108,10 +109,6 @@ export class MQTTProxy {
         return res;
     }
 
-    public static getScheduledMessages(): ScheduledMQTTMessage[] {
-        return MQTTProxy._pendingMessages;
-    }
-
     //#endregion
 
     //#region Publish ---------------------------------------------------------
@@ -125,17 +122,20 @@ export class MQTTProxy {
             when = options.timestamp;
         }
 
-        console.log(`Message planned at ${new Date(when).toLocaleString()}`);
-
         return new Promise((resolve, reject) => {
             //-- Prepare message to be sent details --
-            MQTTProxy._pendingMessages.push({
+            let message = {
+                id: ++MQTTProxy._pendingMessagesNextId,
                 topic,
                 payload,
                 timestamp: when,
                 resolve,
                 reject
-            });
+            };
+            MQTTProxy._pendingMessages.push(message);
+
+            console.log(`Message ${message.id} planned at ${new Date(when).toLocaleString()}`);
+
             //-- Make sure there is a timeout pending to send to message --
             MQTTProxy._scheduleNextPublish();
         });
@@ -187,7 +187,7 @@ export class MQTTProxy {
         //-- Run due callbacks, keep future events --
         for (let pending of pendingMessages) {
             if (!pending.timestamp || pending.timestamp <= now) {
-                console.log(`Message planned at ${new Date(pending.timestamp).toLocaleString()}, send at ${new Date(now).toLocaleString()}, real time ${new Date().toLocaleString()}`);
+                console.log(`Message ${pending.id} planned at ${new Date(pending.timestamp).toLocaleString()}, send at ${new Date(now).toLocaleString()}, real time ${new Date().toLocaleString()}`);
                 // We need to trigger this callback
                 MQTTProxy._client.publish(pending.topic, pending.payload, (err) => {
                     if (err) {
@@ -212,6 +212,19 @@ export class MQTTProxy {
     }
 
     //#endregion
+
+    //#region Scheduled messages ----------------------------------------------
+
+    public static getScheduledMessages(): ScheduledMQTTMessage[] {
+        return MQTTProxy._pendingMessages;
+    }
+
+    public static cancelScheduledMessage(id: number): void {
+        console.log(`Message ${id} cancelled`);
+        MQTTProxy._pendingMessages = MQTTProxy._pendingMessages.filter(m => m.id != id);
+    }
+
+    //#endregion
 }
 
 export function buildMQTTRouter(): Router {
@@ -233,10 +246,6 @@ export function buildMQTTRouter(): Router {
         res.json(MQTTProxy.getAll({ after }));
     });
 
-    router.get("/scheduled", (req, res) => {
-        res.json(MQTTProxy.getScheduledMessages());
-    });
-
     router.post("/get", json({ type: "*/*" }), (req, res) => {
         let topic = req.body?.topic;
         if (!topic) {
@@ -254,14 +263,28 @@ export function buildMQTTRouter(): Router {
     });
 
     // curl -s -o - -X POST -H "Topic: test" http://localhost:3333/mqtt --d @data.txt
-    router.post("/publish", raw({ type: "*/*" }), async (req, res) => {
+    router.post("/publish", raw({ type: "*/*" }), (req, res) => {
         try {
-            await MQTTProxy.publish(req.header("Topic"), req.body, tryParseJSON(req.header("Options")));
+            MQTTProxy.publish(req.header("Topic"), req.body, tryParseJSON(req.header("Options")));
             res.send("OK");
         } catch (e) {
             res.status(500).send(e);
         }
     });
+
+    router.get("/scheduled", (req, res) => {
+        res.json(MQTTProxy.getScheduledMessages());
+    });
+
+    router.get("/cancelScheduled", (req, res) => {
+        try {
+            const id: number = Number.parseInt(req.header("Id"));
+            MQTTProxy.cancelScheduledMessage(id);
+            res.send("OK");
+        } catch (e) {
+            res.status(500).send(`Invalid id`);
+        }
+    })
 
     return router;
 }

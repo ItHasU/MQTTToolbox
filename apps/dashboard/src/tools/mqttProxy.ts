@@ -1,4 +1,4 @@
-import { MQTT_URL, MQTTMessage, MQTTPublishOptions } from '@mqtttoolbox/commons';
+import { MQTT_URL, MQTTMessage, MQTTPublishOptions, ScheduledMessage } from '@mqtttoolbox/commons';
 
 const INTERVAL_MS: number = 2000;
 type MQTTMessageCallback = (msg: MQTTMessage) => void;
@@ -22,7 +22,7 @@ export class MQTTProxy {
     }
 
     /** List scheduled messages */
-    public static getScheduled(): Promise<MQTTMessage[]> {
+    public static getScheduled(): Promise<ScheduledMessage[]> {
         return fetch(`${MQTT_URL}/scheduled`, {
             method: 'GET',
             headers: {
@@ -68,6 +68,17 @@ export class MQTTProxy {
                 timestamp: new Date().getTime()
             }
         });
+    }
+
+    public static cancelScheduled(id: number): Promise<void> {
+        return fetch(`${MQTT_URL}/cancelScheduled`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Id': `${id}`
+            }
+        }).then(() => { });
     }
 
     private static _scheduleUpdate(): void {

@@ -7,6 +7,10 @@ export interface MQTTMessage {
     timestamp: number;
 }
 
+export interface ScheduledMessage extends MQTTMessage {
+    id: number;
+}
+
 export interface HTTPOptions {
     port: number;
 }
