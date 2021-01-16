@@ -1,4 +1,4 @@
-import { MQTT_URL, MQTTMessage } from '@mqtttoolbox/commons';
+import { MQTT_URL, MQTTMessage, MQTTPublishOptions, ScheduledMessage } from '@mqtttoolbox/commons';
 
 const INTERVAL_MS: number = 2000;
 type MQTTMessageCallback = (msg: MQTTMessage) => void;
@@ -21,6 +21,25 @@ export class MQTTProxy {
         return MQTTProxy._messages[topic];
     }
 
+    public static getAll(): MQTTMessage[] {
+        return Object.values(MQTTProxy._messages);
+    }
+
+    /** List scheduled messages */
+    public static getScheduled(): Promise<ScheduledMessage[]> {
+        return fetch(`${MQTT_URL}/scheduled`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.text();
+        }).then((text: string) => {
+            return _jsonParse(text);
+        });
+    }
+
     public static on(topic: string, callback: MQTTMessageCallback): void {
         if (!MQTTProxy._callbacks[topic]) {
             MQTTProxy._callbacks[topic] = [];
@@ -28,7 +47,7 @@ export class MQTTProxy {
         MQTTProxy._callbacks[topic].push(callback);
     }
 
-    public static publish(topic: string, payload: any): Promise<void> {
+    public static publish(topic: string, payload: any, options: MQTTPublishOptions): Promise<void> {
         let payloadBuffer: ArrayBuffer = null;
         if (payload instanceof ArrayBuffer) {
             payloadBuffer = payload;
@@ -42,6 +61,7 @@ export class MQTTProxy {
             method: 'POST',
             headers: <any>{
                 'Topic': topic,
+                'Options': options ? JSON.stringify(options) : undefined,
                 'Content-Type': 'application/octet-stream'
             },
             body: payloadBuffer
@@ -52,6 +72,17 @@ export class MQTTProxy {
                 timestamp: new Date().getTime()
             }
         });
+    }
+
+    public static cancelScheduled(id: number): Promise<void> {
+        return fetch(`${MQTT_URL}/cancelScheduled`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Id': `${id}`
+            }
+        }).then(() => { });
     }
 
     private static _scheduleUpdate(): void {

@@ -11,10 +11,9 @@ const DEFAULT_PORT: number = 3000;
 const DEFAULT_CONFIG_PATH: string = 'config.json';
 
 type ConfigCallback<K extends keyof ConfigFile> = (name: K, value: ConfigFile[K]) => void;
-type ConfigObject = { [name: string]: any };
 
 export class Config {
-  private static _configCache: Promise<ConfigObject> = null;
+  private static _configCache: Promise<ConfigFile> = null;
   private static _callbacks: { [name: string]: ConfigCallback<keyof ConfigFile>[] } = {};
 
   /** Read port from environment variables. Will never fail. */
@@ -56,33 +55,42 @@ export class Config {
    * Set value in config. Will save file and reload it afterwards.
    */
   public static async set<K extends keyof ConfigFile>(name: K, value: ConfigFile[K]): Promise<void> {
-    try {
-      const config = await Config._get();
-      config[name] = JSON.parse(JSON.stringify(value)); // Make sure value is stringifiable
-
-      await Config.save();
-    } catch (e) {
-      console.error(e);
-      throw new Error(`Failed to stringify config value for ${name}`);
-    }
+    await Config._setAndFireCallbacks(name, value);
+    await Config.save();
   }
 
   public static async setMulti(values: Partial<ConfigFile>): Promise<void> {
+    for (let name in values) {
+      await Config._setAndFireCallbacks(<any>name, <any>values[name]);
+    }
+    await Config.save();
+  }
+
+  /** Set value and trigger callbacks */
+  private static async _setAndFireCallbacks(name: string, value: any): Promise<void> {
+    const config = await Config._get();
     try {
-      const config = await Config._get();
-      for (let name in values) {
-        try {
-          config[name] = JSON.parse(JSON.stringify(values[name])); // Make sure value is stringifiable
-        } catch (e) {
-          console.error(e);
-          throw new Error(`Failed to stringify config value for ${name}`);
+      if (value === undefined) {
+        delete config[name];
+      } else {
+        config[name] = JSON.parse(JSON.stringify(value)); // Make sure value is stringifiable
+      }
+    } catch (e) {
+      // Special catch for the 
+      console.error(`Failed to stringify value.`);
+      throw e;
+    }
+
+    try {
+      let callbacks = Config._callbacks[name];
+      if (callbacks) {
+        for (let callback of callbacks) {
+          callback(<keyof ConfigFile>name, value);
         }
       }
-
-      await Config.save();
     } catch (e) {
+      // We don't care about exception in callback
       console.error(e);
-      throw new Error(`Failed to save config`);
     }
   }
 
@@ -91,19 +99,9 @@ export class Config {
       let config = await Config._get();
       await saveText(Config._getConfigFilename(), JSON.stringify(config, null, 2));
     } catch (e) {
-      console.error(e);
-    } finally {
-      // Make sure config cache is deleted
-      await this.reload();
+      console.error(e); // Make sure error is logged
+      throw e;          // Then forward the error
     }
-  }
-
-  /**
-   * Reload the configuration, will also trigger callbacks for all config.
-   */
-  public static reload(): Promise<void> {
-    Config._configCache = null;
-    return Config._get().then((config) => { });
   }
 
   /** Build config path from env variable */
@@ -113,20 +111,12 @@ export class Config {
   }
 
   /** Get config from filesystem of from cache if already loaded. */
-  private static async _get(): Promise<ConfigObject> {
+  private static async _get(): Promise<ConfigFile> {
     if (Config._configCache === null) {
-      Config._configCache = parseJSON<Config>(Config._getConfigFilename());
-      Config._configCache.then((config) => {
-        for (let name in config) {
-          const value: any = config[name];
-
-          let callbacks = Config._callbacks[name];
-          if (!callbacks) continue;
-
-          for (let callback of callbacks) {
-            callback(<keyof ConfigFile>name, value);
-          }
-        }
+      Config._configCache = parseJSON<ConfigFile>(Config._getConfigFilename()).catch((e) => {
+        console.error(e);
+        console.error(`Failed to load config. Reinitialized.`);
+        return Promise.resolve(<ConfigFile>{});
       });
     }
     return Config._configCache;

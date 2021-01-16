@@ -55,6 +55,19 @@ export class Navigation {
     $page.scrollTop(0);
   }
 
+  public static async refresh(): Promise<void> {
+    for (let page in this._pageInfos) {
+      const infos = this._pageInfos[page];
+      if (infos.displayed) {
+        if (infos.onShow) {
+          return this._pageInfos[page].onShow(page, $(`#${page}.page`), infos.data);
+        } else {
+          return Promise.resolve();
+        }
+      }
+    }
+  }
+
   public static register(pageName: string, options: PageOptions): void {
     const infos = Navigation._getPageInfos(pageName);
 
