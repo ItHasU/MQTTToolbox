@@ -22,6 +22,7 @@ export class Navigation {
       const $container = $(element);
       const pageName = $container.data("page");
       const $link = $container.on('click', () => {
+        (<any>$('.navbar-collapse')).collapse('hide'); // Collapse navbar in mobile mode
         Navigation.show(pageName);
       })
     });
