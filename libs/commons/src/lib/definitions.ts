@@ -36,9 +36,27 @@ export interface MQTTPublishOptions {
     timestamp?: number;
 }
 
+export interface CronScenario {
+    activated: boolean;
+    name: string;
+    tasks: CronTask[];
+}
+
+export interface CronTask {
+    days: [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
+
+    hours: number;
+    minutes: number;
+
+    topic: string;
+    payload: string;
+}
+
 export interface ConfigFile {
     mqtt: MQTTServerOptions;
     dashboard: string;
+    cron: CronScenario[];
+
     scheduledMessages: MQTTMessage[];
 }
 
