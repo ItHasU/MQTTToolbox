@@ -2,7 +2,11 @@ import * as $ from 'jquery';
 
 import { Navigation } from '../tools/navigation';
 import { ConfigProxy } from '../tools/configProxy';
-import { cssNumber } from 'jquery';
+
+function twoDigits(value: number): string {
+    const text: string = "00" + value;
+    return text.substring(text.length - 2);
+}
 
 export function register() {
     Navigation.register('cron', {
@@ -47,7 +51,7 @@ async function _onShow(): Promise<void> {
                             <span class="badge ${task.days[5] ? "badge-primary" : "badge-danger"}">S<span class="d-none d-sm-inline">at</span></span>
                             <span class="badge ${task.days[6] ? "badge-primary" : "badge-danger"}">S<span class="d-none d-sm-inline">un</span></span>
                         </div>
-                        <div class="col-4 col-sm-1 text-right text-sm-left">${task.hours}:${task.minutes}</div>
+                        <div class="col-4 col-sm-1 text-right text-sm-left">${task.hours}:${twoDigits(task.minutes)}</div>
                         <div class="col-12 col-sm-3">
                             ${task.topic}
                         </div>
