@@ -113,12 +113,12 @@ export class MQTTProxy {
 
     //#region Publish ---------------------------------------------------------
 
-    public static async publish(topic: string, payload: Buffer, options: MQTTPublishOptions): Promise<void> {
+    public static async publish(topic: string, payload: Buffer, options?: MQTTPublishOptions): Promise<void> {
         let when: number = null; // null = NOW
-        if (options.timeout) {
+        if (options?.timeout) {
             when = Date.now() + options.timeout;
         }
-        if (options.timestamp) {
+        if (options?.timestamp) {
             when = options.timestamp;
         }
 
@@ -263,9 +263,9 @@ export function buildMQTTRouter(): Router {
     });
 
     // curl -s -o - -X POST -H "Topic: test" http://localhost:3333/mqtt --d @data.txt
-    router.post("/publish", raw({ type: "*/*" }), (req, res) => {
+    router.post("/publish", raw({ type: "*/*" }), async (req, res) => {
         try {
-            MQTTProxy.publish(req.header("Topic"), req.body, tryParseJSON(req.header("Options")));
+            await MQTTProxy.publish(req.header("Topic"), req.body, tryParseJSON(req.header("Options")) || {});
             res.send("OK");
         } catch (e) {
             res.status(500).send(e);
