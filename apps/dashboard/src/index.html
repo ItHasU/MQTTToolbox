@@ -171,18 +171,100 @@
       <div id="cron-scenarios">
 
       </div>
-      <!-- No edition at the moment
       <div class="row">
         <div class="col">
-          <button type="button" class="btn btn-primary form-control">
+          <button type="button" id="cron-new-scenario" class="btn btn-primary form-control">
             <i class="bi bi-plus"></i> Add a new scenario
           </button>
         </div>
       </div>
-      -->
 
     </div> <!-- end of cron -->
 
+  </div>
+
+  <div id="cron-task-edit-dialog" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit task</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group row">
+            <label for="cron-task-input-time" class="col-sm-2 col-form-label">Days</label>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cron-task-day-0" checked>
+                <label class="form-check-label" for="cron-task-day-0">
+                  Monday
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cron-task-day-1" checked>
+                <label class="form-check-label" for="cron-task-day-1">
+                  Tuesday
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cron-task-day-2" checked>
+                <label class="form-check-label" for="cron-task-day-2">
+                  Wednesday
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cron-task-day-3" checked>
+                <label class="form-check-label" for="cron-task-day-3">
+                  Thursday
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cron-task-day-4" checked>
+                <label class="form-check-label" for="cron-task-day-4">
+                  Friday
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cron-task-day-5">
+                <label class="form-check-label" for="cron-task-day-5">
+                  Saturday
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cron-task-day-6">
+                <label class="form-check-label" for="cron-task-day-6">
+                  Sunday
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="cron-task-input-time" class="col-sm-2 col-form-label">Time</label>
+            <div class="col-sm-10">
+              <input type="time" class="form-control" id="cron-task-input-time">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="cron-task-input-topic" class="col-sm-2 col-form-label">Topic</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="cron-task-input-topic">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="cron-task-input-payload" class="col-sm-2 col-form-label">Payload</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="cron-task-input-payload">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 </body>

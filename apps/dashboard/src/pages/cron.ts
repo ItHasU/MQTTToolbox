@@ -3,6 +3,8 @@ import * as $ from 'jquery';
 import { Navigation } from '../tools/navigation';
 import { ConfigProxy } from '../tools/configProxy';
 
+$('#cron-task-edit-dialog').modal("show");
+
 function twoDigits(value: number): string {
     const text: string = "00" + value;
     return text.substring(text.length - 2);
@@ -10,7 +12,14 @@ function twoDigits(value: number): string {
 
 export function register() {
     Navigation.register('cron', {
+        onInit: _onInit,
         onShow: _onShow
+    });
+}
+
+async function _onInit(): Promise<void> {
+    $('#cron-new-scenario').on("click", () => {
+        $('#cron-task-edit-dialog').modal("show");
     });
 }
 
