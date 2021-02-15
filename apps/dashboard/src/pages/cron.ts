@@ -50,13 +50,6 @@ async function _onShow(): Promise<void> {
         <div class="card-body">
         </div>
       </div> <!-- End of card -->`);
-    // <!--No edition at the moment
-    //   < div class="row" >
-    //     <div class="col text-right" >
-    //       <a href="#" > <i class="bi bi-plus" > </i></a >
-    //         </div>
-    //         < /div>
-    // -->
     $scenariosDiv.append($content);
     //-- Bind callbacks --
     $content.find(`input[type="checkbox"]`).on("change", (evt) => {
@@ -67,7 +60,8 @@ async function _onShow(): Promise<void> {
       });
     });
 
-    for (let task of scenario.tasks) {
+    for (let i = 0; i < scenario.tasks.length; i++) {
+      const task = scenario.tasks[i];
       let $taskDiv = $(`
         <div class="row">
           <div class="col-8 col-sm-4">
@@ -96,10 +90,33 @@ async function _onShow(): Promise<void> {
         //-- Edit task --
         _editTask(task);
       });
-      $taskDiv.find("a[data-action='delete']").on("click", () => {
+      $taskDiv.find("a[data-action='delete']").on("click", async () => {
         //-- Delete task --
+        scenario.tasks.splice(i, 1);
+        await ConfigProxy.setValues({
+          cron: scenarios
+        });
+        Navigation.refresh();
       });
+
     }
+    let $add = $(`<div class="row" >
+                    <div class="col text-right">
+                      <a href="javascript: void(0);"><i class="bi bi-plus"></i></a>
+                    </div>
+                  </div>`);
+    $content.find("div.card-body").append($add);
+    $add.find("a").on("click", () => {
+      let task: CronTask = {
+        days: [true, true, true, true, true, false, false],
+        hours: 12,
+        minutes: 0,
+        topic: "",
+        payload: ""
+      };
+      scenario.tasks.push(task);
+      _editTask(task);
+    });
   }
 }
 
@@ -118,7 +135,14 @@ function _editTaskInit(): void {
     }
 
     //-- Read content from form --
-    // TODO
+    for (let i = 0; i < 7; i++) {
+      _editedTask.days[i] = $(`#cron-task-day-${i}`).prop("checked") ? true : false;
+    }
+    let [hourStr, minutesStr] = (<string>$("#cron-task-input-time").val()).split(":");
+    _editedTask.hours = +hourStr;
+    _editedTask.minutes = +minutesStr;
+    _editedTask.topic = <string>$("#cron-task-input-topic").val();
+    _editedTask.payload = <string>$("#cron-task-input-payload").val();
 
     //-- Trigger config save --
     await ConfigProxy.setValues({
@@ -139,7 +163,12 @@ function _editTask(task: CronTask): void {
   }
 
   //-- Fill dialog with current task --
-  // TODO
+  for (let i = 0; i < 7; i++) {
+    $(`#cron-task-day-${i}`).prop("checked", task.days[i] ? true : false);
+  }
+  $("#cron-task-input-time").val(`${twoDigits(task.hours)}:${twoDigits(task.minutes)}`);
+  $("#cron-task-input-topic").val(task.topic);
+  $("#cron-task-input-payload").val(task.payload);
 
   //-- Show dialog --
   ($editTaskDialog as any).modal("show");
