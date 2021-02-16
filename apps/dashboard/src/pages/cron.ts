@@ -21,6 +21,25 @@ export function register() {
 
 async function _onInit(): Promise<void> {
   _editTaskInit();
+
+  $("#cron-new-scenario").on("click", async () => {
+    const newName = prompt("Scenario name", "");
+    if (!newName) {
+      return;
+    }
+
+    let scenario: CronScenario = {
+      activated: false,
+      name: newName,
+      tasks: []
+    };
+    scenarios.push(scenario);
+
+    await ConfigProxy.setValues({
+      cron: scenarios
+    });
+    Navigation.refresh();
+  });
 }
 
 async function _onShow(): Promise<void> {
@@ -31,37 +50,57 @@ async function _onShow(): Promise<void> {
   if (!scenarios) {
     return;
   }
-  let i = 0;
-  for (let scenario of scenarios) {
-    i++;
+  for (let iScenario = 0; iScenario < scenarios.length; iScenario++) {
+    const scenario = scenarios[iScenario];
     let $content = $(`
       <div class="card mb-3">
         <div class="card-header bg-dark text-light">
-          <div class="custom-control custom-switch">
-              <input id="cron-scenario-${i}" class="custom-control-input" type="checkbox" ${scenario.activated ? "checked" : ""}>
-              <label class="custom-control-label" for="cron-scenario-${i}">${scenario.name}</label>
+          <div class="row">
+            <div class="col-10">
+              <div class="custom-control custom-switch">
+                <input id="cron-scenario-${iScenario}" class="custom-control-input" type="checkbox" ${scenario.activated ? "checked" : ""}>
+                <label class="custom-control-label" for="cron-scenario-${iScenario}">${scenario.name}</label>
+              </div>
+            </div>
+            <div class="col-2 text-right">
+              <a class="text-primary" href="javascript: void(0);" data-action="edit"><i class="bi bi-pencil"></i></a>
+              <a class="text-danger" href="javascript: void(0);" data-action="delete"><i class="bi bi-trash"></i></a>
+            </div>
           </div>
-          <!-- No edition at the moment
-          <div class="float-right">
-              <a class="text-danger" href="#"><i class="bi bi-trash"></i></a>
-          </div>
-          -->
         </div>
         <div class="card-body">
         </div>
       </div> <!-- End of card -->`);
+    $content.find(`a[data-action="delete"]`).on("click", async () => {
+      scenarios.splice(iScenario, 1);
+      await ConfigProxy.setValues({
+        cron: scenarios
+      });
+      Navigation.refresh();
+    });
+    $content.find(`a[data-action="edit"]`).on("click", async () => {
+      const newName = prompt("Scenario name", scenario.name);
+      if (!newName) {
+        return;
+      }
+
+      scenario.name = newName;
+      await ConfigProxy.setValues({
+        cron: scenarios
+      });
+      Navigation.refresh();
+    });
     $scenariosDiv.append($content);
     //-- Bind callbacks --
     $content.find(`input[type="checkbox"]`).on("change", (evt) => {
       scenario.activated = $(evt.target).is(":checked") ? true : false;
-      console.log(scenario.activated);
       ConfigProxy.setValues({
         cron: scenarios
       });
     });
 
-    for (let i = 0; i < scenario.tasks.length; i++) {
-      const task = scenario.tasks[i];
+    for (let iTask = 0; iTask < scenario.tasks.length; iTask++) {
+      const task = scenario.tasks[iTask];
       let $taskDiv = $(`
         <div class="row">
           <div class="col-8 col-sm-4">
@@ -92,7 +131,7 @@ async function _onShow(): Promise<void> {
       });
       $taskDiv.find("a[data-action='delete']").on("click", async () => {
         //-- Delete task --
-        scenario.tasks.splice(i, 1);
+        scenario.tasks.splice(iTask, 1);
         await ConfigProxy.setValues({
           cron: scenarios
         });
