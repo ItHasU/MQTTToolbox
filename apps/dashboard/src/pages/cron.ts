@@ -46,10 +46,13 @@ async function _onShow(): Promise<void> {
   const $scenariosDiv = $("#cron-scenarios");
   $scenariosDiv.empty();
 
+  // Load / Create scenarios
   scenarios = await ConfigProxy.getValue("cron");
   if (!scenarios) {
-    return;
+    scenarios = [];
   }
+
+  // Render scenarios
   for (let iScenario = 0; iScenario < scenarios.length; iScenario++) {
     const scenario = scenarios[iScenario];
     let $content = $(`
