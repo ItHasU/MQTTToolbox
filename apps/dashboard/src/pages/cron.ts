@@ -47,7 +47,12 @@ async function _onShow(): Promise<void> {
   $scenariosDiv.empty();
 
   // Load / Create scenarios
-  scenarios = await ConfigProxy.getValue("cron");
+  try {
+    scenarios = await ConfigProxy.getValue("cron");
+  } catch (e) {
+    // Don't care, just force scenarios to be reset
+    scenarios = null;
+  }
   if (!scenarios) {
     scenarios = [];
   }
