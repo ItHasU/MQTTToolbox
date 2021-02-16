@@ -8,7 +8,7 @@ import { MQTT_URL, CONFIG_URL, MQTTMessage } from "@mqtttoolbox/commons";
 import { Config } from './app/tools/config';
 
 import * as process from 'process';
-import { environment } from './environments/environment.prod';
+import { CronScheduler } from './app/cron';
 
 async function persistBeforeExit() {
   console.log("Persisting scheduled messages ...");
@@ -27,6 +27,10 @@ async function persistBeforeExit() {
 
 async function main() {
   try {
+    //-- Init Cron scheduler --------------------------------------------------
+    // It will start automatically on Config loading
+    CronScheduler.start();
+
     //-- Bind config & MQTT connection ----------------------------------------
     Config.on("mqtt", (name, value) => {
       console.log(`MQTT configuration has changed`);
