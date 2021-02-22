@@ -34,7 +34,6 @@
     "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "document-register-element": "1.13.1",
     "@nrwl/cli": "10.4.4",
     "@nrwl/cypress": "10.4.4",
     "@nrwl/eslint-plugin-nx": "10.4.4",
@@ -52,9 +51,10 @@
     "@typescript-eslint/eslint-plugin": "4.3.0",
     "@typescript-eslint/parser": "4.3.0",
     "bootstrap": "^4.5.3",
-    "bootstrap-icons": "^1.2.1",
+    "bootstrap-icons": "^1.4.0",
     "codemirror": "^5.58.3",
     "cypress": "^5.5.0",
+    "document-register-element": "1.13.1",
     "dotenv": "6.2.0",
     "eslint": "7.10.0",
     "eslint-config-prettier": "6.0.0",
