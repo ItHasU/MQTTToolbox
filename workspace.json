@@ -104,7 +104,12 @@
             "assets": [
               "apps/dashboard/src/favicon.ico",
               "apps/dashboard/src/manifest.webmanifest",
-              "apps/dashboard/src/assets"
+              "apps/dashboard/src/assets",
+              {
+                "glob": "*.*",
+                "input": "node_modules/bootstrap-icons/font/fonts/",
+                "output": "/fonts"
+              }
             ],
             "styles": [
               "apps/dashboard/src/styles.scss"
