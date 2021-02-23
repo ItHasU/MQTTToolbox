@@ -41,3 +41,7 @@ import 'popper.js';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 ```
+
+### Personnalisér webpack
+
+https://yonatankra.com/how-to-use-custom-webpack-configuration-in-a-nrwl-project/
