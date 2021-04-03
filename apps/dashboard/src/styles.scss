@@ -12,6 +12,20 @@ div.main {
     padding-top: 15px;
 }
 
+div.editor {
+    background-color: black;
+    opacity: 0.5;
+
+    position: absolute;
+    top: 56px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    padding-top: 15px;
+
+    z-index: 10000;
+}
+
 .page {
     height: 100%;
     overflow: auto;
