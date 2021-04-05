@@ -1,9 +1,10 @@
-import * as $ from 'jquery';
-import * as Editor from '../tools/editor';
+import { Editor } from '../tools/editor';
 
 import { Navigation } from '../tools/navigation';
 import { ConfigProxy } from '../tools/configProxy';
 import { ConfigFile } from '@mqtttoolbox/commons';
+
+var _editor: Editor = null;
 
 export function register() {
   Navigation.register('settings', {
@@ -14,7 +15,7 @@ export function register() {
 
 async function _onInit(pageName: string, $page: JQuery): Promise<void> {
   //-- Init editor ------------------------------------------------------------
-  Editor.initIfNeeded($page.find("#code-editor")[0], {
+  _editor = new Editor($page.find("#code-editor-panel")[0], {
     onSave: _saveDashboard
   });
   $page.find("#code-editor-save").on('click', _saveDashboard);
@@ -31,13 +32,13 @@ async function _onShow(pageName: string, $page: JQuery): Promise<void> {
 
   //-- Refresh editor content -------------------------------------------------
   let content = await ConfigProxy.getValue('dashboard');
-  Editor.edit(content);
+  _editor.edit(content);
 }
 
 async function _saveDashboard(): Promise<void> {
   try {
     await ConfigProxy.setValues({
-      dashboard: Editor.getContent()
+      dashboard: _editor.content
     });
   } catch (e) {
     // Failed

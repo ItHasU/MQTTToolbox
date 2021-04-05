@@ -3,52 +3,60 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/seti.css';
 import 'codemirror/mode/htmlmixed/htmlmixed';
 
-var _container: HTMLElement = null;
-var _editor: CodeMirror.Editor = null;
+export class Editor {
+    protected _editor: CodeMirror.Editor = null; // Lazy init
 
-export function initIfNeeded(container: HTMLElement, options?: {
-    onEscape?: () => void;
-    onSave?: (content: string) => void;
-}) {
-    if (_editor) {
-        return;
+    constructor(protected _container: HTMLElement, protected _options?: {
+        onEscape?: () => void;
+        onSave?: (content: string) => void;
+    }) {
+    };
+
+    get container(): HTMLElement {
+        return this._container;
     }
 
-    _container = container;
-    _editor = CodeMirror(_container, {
-        mode: "htmlmixed",
-        lineNumbers: true,
-        theme: "seti",
-        smartIndent: true,
-        tabSize: 2,
-        indentWithTabs: false,
-        extraKeys: {
-            "Esc": () => {
-                options?.onEscape();
-            },
-            "Ctrl-S": () => {
-                options?.onSave(_editor.getValue());
-            }
+    get content(): string {
+        return this._editor.getValue();
+    }
+
+    /** Toggle container visibility. Will initialize the editor if needed and fill it with the dashboard config. */
+    public edit(content: string) {
+        this._initIfNeeded();
+
+        this._editor.setValue(content);
+        this._editor.refresh();
+
+        this._editor.focus();
+        this._editor.setCursor(0, undefined, {
+            scroll: true
+        });
+    }
+
+    protected _initIfNeeded() {
+        if (this._editor) {
+            return;
         }
-    });
 
-    _editor.setSize("100%", "100%");
-    _editor.refresh();
+        this._editor = CodeMirror(this._container, {
+            mode: "htmlmixed",
+            lineNumbers: true,
+            theme: "seti",
+            smartIndent: true,
+            tabSize: 2,
+            indentWithTabs: false,
+            extraKeys: {
+                "Esc": () => {
+                    this._options?.onEscape();
+                },
+                "Ctrl-S": () => {
+                    this._options?.onSave(this._editor.getValue());
+                }
+            }
+        });
+
+        this._editor.setSize("100%", "100%");
+        this._editor.refresh();
+    }
 }
 
-export function edit(content: string) {
-    if (!_editor) return;
-
-    _editor.setValue(content);
-    _editor.refresh();
-
-    _editor.focus();
-    _editor.setCursor(0, undefined, {
-        scroll: true
-    });
-}
-
-export function getContent(): string {
-    if (_editor) return _editor.getValue();
-    else return null;
-}

@@ -12,6 +12,22 @@ div.main {
     padding-top: 15px;
 }
 
+/** Placeholder for the code editor. A huge div taking all the screen */
+#code-editor {
+    background-color: black;
+    opacity: 0.8;
+    color: white;
+
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    padding: 0px;
+
+    z-index: 10000;
+}
+
 .page {
     height: 100%;
     overflow: auto;

@@ -151,11 +151,10 @@
           <!-- <span class="float-right">
             <a class="btn btn-primary btn-sm"><i class="bi bi-arrow-repeat"></i> Reload</a>
           </span> -->
-          <h5>Edit dashboard</h5>
+          <h5>Edit dashboard <small class="text-muted">(Use Ctrl+E to toggle fullscreen editor)</small></h5>
         </div>
-        <div class="card-body" style="height: 600px; padding: 0px;">
-          <div id="code-editor" style="width: 100%; height: 100%;">
-          </div>
+        <div id="code-editor-panel" class="card-body" style="height: 600px; padding: 0px;">
+
         </div>
         <div class="card-footer bg-dark text-light">
           <a id="code-editor-save" class="btn btn-primary form-control">
@@ -181,6 +180,10 @@
 
     </div> <!-- end of cron -->
 
+  </div>
+
+  <div id="code-editor" style="display: none;">
+    <!-- Placeholder for the editor -->
   </div>
 
   <div id="cron-task-edit-modal" class="modal" tabindex="-1">
