@@ -15,12 +15,14 @@ import * as PageDashboard from './pages/dashboard';
 import * as PageSettings from './pages/settings';
 import * as PageStatus from './pages/status';
 import * as CronPage from './pages/cron';
+import * as Editor from './pages/editor';
 
 (<any>window).MQTT = MQTTProxy;
 
 function main() {
     //-- Install navigation, pages --
     Navigation.install();
+    Editor.register();
     PageDashboard.register();
     PageSettings.register();
     PageStatus.register();

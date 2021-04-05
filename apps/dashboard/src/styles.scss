@@ -12,16 +12,18 @@ div.main {
     padding-top: 15px;
 }
 
-div.editor {
+/** Placeholder for the code editor. A huge div taking all the screen */
+#code-editor {
     background-color: black;
-    opacity: 0.5;
+    opacity: 0.8;
+    color: white;
 
     position: absolute;
-    top: 56px;
+    top: 0px;
     bottom: 0px;
     left: 0px;
     right: 0px;
-    padding-top: 15px;
+    padding: 0px;
 
     z-index: 10000;
 }
