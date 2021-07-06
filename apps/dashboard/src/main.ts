@@ -8,6 +8,7 @@ import "./components/mqtt-value";
 import "./components/mqtt-json";
 import "./components/mqtt-date";
 import "./components/mqtt-age";
+import "./components/mqtt-if";
 
 import { MQTTProxy } from './tools/mqttProxy';
 import { Navigation } from './tools/navigation';
