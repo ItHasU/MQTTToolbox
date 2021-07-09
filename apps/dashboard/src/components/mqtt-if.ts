@@ -3,14 +3,14 @@ import { MQTTProxy } from '../tools/mqttProxy';
 
 enum ATTRIBUTES {
     TOPIC = "topic",
+    PATH = "path",
     EQUALS = "equals",
     NOT_EQUALS = "not-equals"
 }
 
 export class MQTTIFElement extends HTMLElement {
     public static observedAttributes = [];
-
-    protected _shadowRoot: ShadowRoot;
+    private _reader: Function;
 
     constructor() {
         super();
@@ -20,11 +20,21 @@ export class MQTTIFElement extends HTMLElement {
         let topic = this.getAttribute(ATTRIBUTES.TOPIC);
         MQTTProxy.on(topic, this._update.bind(this));
 
+        const path = this.getAttribute(ATTRIBUTES.PATH) ?? "";
+        this._reader = path ? new Function("$", `return $${path}`) : null;
+
         this._update(MQTTProxy.get(topic));
     }
 
     protected _update(msg: MQTTMessage) {
-        const payloadStr = msg ? new TextDecoder("utf-8").decode(msg.payload) : undefined;
+        let payloadStr = null;
+        try {
+            let value = msg?.payload;
+            let valueStr = value ? new TextDecoder("utf-8").decode(value) : null;
+            payloadStr = this._reader ? this._reader(JSON.parse(valueStr)) : valueStr;
+        } catch (e) {
+            console.error(e);
+        }
 
         let show: boolean = true;
         if (this.hasAttribute(ATTRIBUTES.EQUALS)) {
