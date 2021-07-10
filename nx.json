@@ -23,9 +23,6 @@
     }
   },
   "projects": {
-    "server": {
-      "tags": []
-    },
     "commons": {
       "tags": []
     },
@@ -35,6 +32,17 @@
     "dashboard-e2e": {
       "tags": [],
       "implicitDependencies": ["dashboard"]
+    },
+    "server": {
+      "tags": []
     }
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
   }
 }

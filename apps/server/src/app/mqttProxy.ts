@@ -70,7 +70,13 @@ export class MQTTProxy {
         let p: Promise<void> = Promise.resolve();
         if (MQTTProxy._client) {
             p = new Promise((resolve, reject) => {
-                MQTTProxy._client.end(false, {}, resolve);
+                MQTTProxy._client.end(false, {}, (error?: Error) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve();
+                    }
+                });
             });
         }
         MQTTProxy._client = null;
