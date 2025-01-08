@@ -8,6 +8,7 @@
 #                       --tag ithasu/mqtt-toolbox:dev .                       #
 ###############################################################################
 FROM node:14-alpine AS run
+RUN apk add --no-cache tzdata
 
 WORKDIR /app
 
